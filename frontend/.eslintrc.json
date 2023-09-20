@@ -41,6 +41,7 @@
     }
   },
   "rules": {
+    "linebreak-style": ["error", "windows"],
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": [
       "error",
