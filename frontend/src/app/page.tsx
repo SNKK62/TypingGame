@@ -1,4 +1,9 @@
+'use client';
+
+import { Height } from '@mui/icons-material';
 import Image from 'next/image';
+
+import { Button } from '../components/button';
 
 import styles from './page.module.css';
 
@@ -92,6 +97,17 @@ export default function Home() {
           </p>
         </a>
       </div>
+      <Button
+        color='success'
+        href='https://x.com/'
+        height='1000px'
+        width='50%'
+        onClick={() => {
+          console.log(1);
+        }}
+      >
+        ボタン
+      </Button>
     </main>
   );
 }
