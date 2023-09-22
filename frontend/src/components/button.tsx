@@ -12,7 +12,6 @@ interface ButtonProps {
     | 'info'
     | 'warning';
   startIcon?: React.ReactNode;
-  size?: 'small' | 'medium' | 'large';
   href?: string;
   width?: string;
   height?: string;
@@ -25,7 +24,6 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   color = 'secondary',
   startIcon,
-  size = 'medium',
   href = '',
   width,
   height,
@@ -43,7 +41,6 @@ export const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       color={color}
       startIcon={startIcon}
-      size={size}
       href={href}
       sx={sxProperty}
     >
