@@ -38,11 +38,11 @@ export const Button: React.FC<ButtonProps> = ({
     <RawButton
       variant={variant}
       disabled={disabled}
-      onClick={onClick}
       color={color}
       startIcon={startIcon}
       href={href}
       sx={sxProperty}
+      onClick={onClick}
     >
       {children}
     </RawButton>
