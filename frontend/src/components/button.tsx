@@ -21,16 +21,16 @@ interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({
-  onClick,
-  children,
-  startIcon,
-  href = '',
   variant = 'contained',
   disabled = false,
-  size = 'large',
   color = 'secondary',
+  startIcon,
+  size = 'large',
+  href = '',
   width,
   height,
+  onClick,
+  children,
 }) => {
   const sxProperty: object = {
     width: width,
