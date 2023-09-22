@@ -25,7 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   color = 'secondary',
   startIcon,
-  size = 'large',
+  size = 'medium',
   href = '',
   width,
   height,
