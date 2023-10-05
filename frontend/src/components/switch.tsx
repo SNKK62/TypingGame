@@ -14,8 +14,8 @@ interface SwitchProps {
   disabled?: boolean;
   edge?: 'end' | 'start' | false;
   // icon?: string;
-  id: string;
-  onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  id?: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   size?: 'medium' | 'small';
 }
 
@@ -26,9 +26,9 @@ export const Switch: React.FC<SwitchProps> = ({
   disabled = false,
   edge = false,
   // icon,
-  id,
+  id = '',
   size = 'medium',
-  onChange = () => {},
+  onChange,
 }) => {
   return (
     <RawSwitch
