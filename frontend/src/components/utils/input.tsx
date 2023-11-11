@@ -1,5 +1,4 @@
 import RawTextField from '@mui/material/TextField';
-import Image1 from 'next/image';
 import { useState } from 'react';
 
 interface TextFieldProps {
@@ -113,74 +112,43 @@ export const TextField: React.FC<TextFieldProps> = ({
 };
 
 interface ImageInputProps {
-  alt?: string;
-  maxwidth?: number;
   id: string;
+  onImageChange: (image: string | undefined) => void;
+  maxSize?: number;
 }
 
 export const ImageInput: React.FC<ImageInputProps> = ({
-  alt = '画像プレビュー',
-  maxwidth = 300,
   id,
+  onImageChange,
+  maxSize = Infinity,
 }) => {
-  //event handler start
-  const [imagePreview, setImagePreview] = useState<
-    string | ArrayBuffer | null | undefined
-  >(undefined);
-  const [heightPixel, setHeightPixel] = useState(0);
-  const [widthPixel, setWidthPixel] = useState(0);
   const onChangeFileInput = (
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
-    setImagePreview(undefined);
+    // setImagePreview(undefined);
     if (event.target.files?.length === 0) {
       return;
-    }
-    if (event.target.files?.[0] === undefined) {
+    } else if (event.target.files?.[0] === undefined) {
       return;
-    }
-    if (!event.target.files?.[0].type.match('image.*')) {
+    } else if (!event.target.files?.[0].type.match('image.*')) {
+      return;
+    } else if (event.target.files?.[0].size > maxSize) {
+      alert('画像のサイズが大きすぎます!');
       return;
     }
     const reader = new FileReader();
     reader.onload = (e) => {
-      setImagePreview(e.target?.result);
-      const image = new Image();
-      image.src = e.target?.result as string;
-      image.onload = () => {
-        const originalWidth = image.width as number;
-        const originalHeight = image.height as number;
-        //画像のサイズに関する制限などはここに書けばよさそう
-        if (originalWidth > originalHeight) {
-          setWidthPixel(maxwidth);
-          setHeightPixel((maxwidth * originalHeight) / originalWidth);
-        } else {
-          setHeightPixel(maxwidth);
-          setWidthPixel((maxwidth * originalWidth) / originalHeight);
-        }
-      };
+      onImageChange(e.target?.result as string);
     };
-
     reader.readAsDataURL(event.target?.files[0]);
   };
-  //event handler end
   return (
-    <>
-      <input
-        type='file'
-        accept='image/*'
-        id={id}
-        onChange={onChangeFileInput}
-        hidden={true}
-      />
-      <output>
-        <Image1
-          src={imagePreview as string}
-          alt={alt}
-          width={widthPixel}
-          height={heightPixel}
-        />
-      </output>
-    </>
+    <input
+      type='file'
+      accept='image/*'
+      id={id}
+      onChange={onChangeFileInput}
+      hidden={true}
+    />
   );
 };
