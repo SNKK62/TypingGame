@@ -1,5 +1,4 @@
 import NextImage from 'next/image';
-// import { useEffect, useState } from 'react';
 
 interface ImagePreviewProps {
   image: string | undefined;

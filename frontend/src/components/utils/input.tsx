@@ -1,10 +1,9 @@
 import RawTextField from '@mui/material/TextField';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface TextFieldProps {
   hidden?: boolean;
   autoComplete?: string;
-  autoFocus?: boolean;
   color?: 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   defaultvalue?: string;
   disabled?: boolean;
@@ -27,7 +26,6 @@ interface TextFieldProps {
 export const TextField: React.FC<TextFieldProps> = ({
   hidden = false,
   autoComplete = 'off',
-  // autoFocus = false,
   color = 'secondary',
   defaultvalue,
   disabled = false,
@@ -73,14 +71,12 @@ export const TextField: React.FC<TextFieldProps> = ({
   };
   const sxprops = {
     margin: '8px',
-    // height: height,
     width: width,
   };
   return (
     <RawTextField
       hidden={hidden}
       autoComplete={autoComplete}
-      // autoFocus={autoFocus}
       color={color}
       defaultValue={defaultvalue}
       disabled={disabled}
@@ -91,7 +87,6 @@ export const TextField: React.FC<TextFieldProps> = ({
       placeholder={placehodler}
       multiline={multiline}
       maxRows={maxRows}
-      // readOnly={readOnly}
       type={type}
       InputLabelProps={{
         shrink: isShrunk,
@@ -112,12 +107,14 @@ export const TextField: React.FC<TextFieldProps> = ({
 };
 
 interface ImageInputProps {
+  children?: React.ReactNode;
   id: string;
-  onImageChange: (image: string | undefined) => void;
+  onImageChange: (image: Blob) => void;
   maxSize?: number;
 }
 
 export const ImageInput: React.FC<ImageInputProps> = ({
+  children,
   id,
   onImageChange,
   maxSize = Infinity,
@@ -125,7 +122,6 @@ export const ImageInput: React.FC<ImageInputProps> = ({
   const onChangeFileInput = (
     event: React.ChangeEvent<HTMLInputElement>,
   ): void => {
-    // setImagePreview(undefined);
     if (event.target.files?.length === 0) {
       return;
     } else if (event.target.files?.[0] === undefined) {
@@ -136,19 +132,18 @@ export const ImageInput: React.FC<ImageInputProps> = ({
       alert('画像のサイズが大きすぎます!');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      onImageChange(e.target?.result as string);
-    };
-    reader.readAsDataURL(event.target?.files[0]);
+    onImageChange(event.target?.files?.[0]);
   };
   return (
-    <input
-      type='file'
-      accept='image/*'
-      id={id}
-      onChange={onChangeFileInput}
-      hidden={true}
-    />
+    <>
+      <input
+        type='file'
+        accept='image/*'
+        id={id}
+        onChange={onChangeFileInput}
+        hidden={true}
+      />
+      {children}
+    </>
   );
 };
