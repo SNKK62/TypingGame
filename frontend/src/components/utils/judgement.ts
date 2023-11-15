@@ -660,31 +660,34 @@ export const loading = (e: string): [string[], string[], string[]] => {
 export const judge = (
   e: string,
   japar: string[],
-  countC: number,
+  count: number,
   entered: string,
   allPattern: string[],
   previous: string,
 ): (string | number | string[])[] => {
-  if (isPrefixOf(entered + e, allPattern)) {
-    const newEntereed: string = entered + e;
+  const newEntereed: string = entered + e;
+  if (isPrefixOf(newEntereed, allPattern)) {
     if (allPattern.includes(newEntereed)) {
-      if (countC + 1 < japar.length) {
+      if (count + 1 < japar.length) {
         const newAllPattern: string[] = make_all_pattern(
-          japar[countC + 1] as string,
-          japar[countC + 2],
+          japar[count + 1] as string,
+          japar[count + 2],
         );
-        const newCountC: number = countC + 1;
-        return [1, newAllPattern, newCountC, newEntereed];
+        const newcount: number = count + 1;
+        return [1, newAllPattern, newcount, newEntereed];
       } else {
         return [2, newEntereed];
       }
     } else {
-      return [3, newEntereed];
+      const regislatedAllPattern = allPattern.filter((item) =>
+        item.startsWith(newEntereed),
+      );
+      return [3, newEntereed, regislatedAllPattern];
     }
   } else if (
     previous === 'n' &&
     !entered &&
-    japar[countC - 1] === 'ん' &&
+    japar[count - 1] === 'ん' &&
     e === 'n'
   ) {
     return [4];
