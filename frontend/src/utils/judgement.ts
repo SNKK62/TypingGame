@@ -1,7 +1,7 @@
 import { L1KEY, L2KEY, L3KEY, KEY_AFTER_N } from './kana';
 
-//
-const construct_array = (japanese: string) => {
+//平仮名のstringを引数にとり、音節に分けた平仮名のlistを返す
+const construct_array = (japanese: string): string[] => {
   let i = 0;
   const array = [];
   while (i < japanese.length) {
@@ -26,8 +26,8 @@ const construct_array = (japanese: string) => {
   return array;
 };
 
-//
-const make_goal = (array: string[]) => {
+//音節分けされた平仮名listを引数にとり、個々の音節に対してお手本のキーを含むlistを返す
+const make_goal = (array: string[]): string[] => {
   const answer = [];
   for (let i = 0; i < array.length; i++) {
     if (array[i].length === 1) {
@@ -62,7 +62,8 @@ const make_goal = (array: string[]) => {
   return answer;
 };
 
-const compose = (japanese: string) => {
+//音節の1要素を引数にとり、平仮名1文字ずつについて入力パターンを全て網羅するキー入力パターンlistを返す。
+const compose = (japanese: string): string[] => {
   let candidate = [''];
   for (let i = 0; i < japanese.length; i++) {
     const entry = L1KEY.find((e) => e.char === japanese[i]);
@@ -78,7 +79,8 @@ const compose = (japanese: string) => {
   }
   return candidate;
 };
-const compose12 = (japanese: string) => {
+//平仮名3文字で1音節を構成する要素を引数にとり、平仮名1文字＋平仮名2文字に分けて入力パターンを全て網羅するキー入力パターンlistを返す。
+const compose12 = (japanese: string): string[] => {
   let candidate = [];
   let entry = { char: '', keys: [''] };
   const singleMatched = L1KEY.find((e) => e.char === japanese[0]);
@@ -102,7 +104,8 @@ const compose12 = (japanese: string) => {
   return candidate;
 };
 
-const compose21 = (japanese: string) => {
+//平仮名3文字で1音節を構成する要素を引数にとり、平仮名2文字＋平仮名1文字に分けて入力パターンを全て網羅するキー入力パターンlistを返す。
+const compose21 = (japanese: string): string[] => {
   let candidate = [];
   let entry = { char: '', keys: [''] };
   const doubleMatched = L2KEY.find((e) => e.char === japanese.slice(0, 2));
@@ -126,7 +129,8 @@ const compose21 = (japanese: string) => {
   return candidate;
 };
 
-const make_all_pattern = (st: string, next: string | undefined) => {
+//音節の1要素を引数にとり、音節の入力パターンを全て網羅したキー入力パターンを返す。
+const make_all_pattern = (st: string, next: string | undefined): string[] => {
   let pattern: string[] = [];
   if (st.length === 1) {
     if (st === 'ん') {
@@ -167,6 +171,7 @@ const isPrefixOf = (prefix: string, arr: string[]): boolean => {
   return arr.some((item) => item.startsWith(prefix));
 };
 
+//新規単語が読み込まれた際に、平仮名stringを引数にとり、音節分けされた平仮名list,お手本キーlist,最初の音節の入力全パターンlistを返す。
 export const loading = (e: string): [string[], string[], string[]] => {
   const japar = construct_array(e);
   return [
@@ -176,6 +181,7 @@ export const loading = (e: string): [string[], string[], string[]] => {
   ];
 };
 
+//キーが入力された場合に現在の諸状況を引数にとり、正誤判定を行う。次のstate処理に必要な情報を適宜返す。
 export const judge = (
   e: string,
   japar: string[],

@@ -1,3 +1,3 @@
-import { WordCardContainer } from './container';
-const Page = () => <WordCardContainer />;
+import { PlayContainer } from './container';
+const Page = () => <PlayContainer />;
 export default Page;

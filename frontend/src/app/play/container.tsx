@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Presenter } from '@/app/play/presenter';
 import { loading, judge } from '@/utils/judgement';
 
-export const WordCardContainer = () => {
+export const PlayContainer = () => {
   const [height, setHeight] = useState<number>(100);
   const [width, setWidth] = useState<number>(1000);
   const [words, setWords] = useState<string[]>([
