@@ -1,3 +1,7 @@
 import { PlayContainer } from './container';
-const Page = () => <PlayContainer />;
+const Page = () => (
+  <>
+    <PlayContainer />
+  </>
+);
 export default Page;
