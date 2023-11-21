@@ -11,6 +11,9 @@ interface WordCardProps {
   keyFuture: string | undefined;
   width: number;
   height: number;
+  x: number;
+  y: number;
+  opacity: number;
   color?: string;
   fontColor?: string;
   keyDisplay?: boolean;
@@ -27,6 +30,9 @@ export const WordCard: React.FC<WordCardProps> = ({
   keyFuture,
   width,
   height,
+  x,
+  y,
+  opacity = 1,
   color = 'darkblue',
   fontColor = 'white',
   keyDisplay = true,
@@ -40,6 +46,10 @@ export const WordCard: React.FC<WordCardProps> = ({
         height: height,
         width: width,
         color: fontColor,
+        position: 'absolute',
+        top: y,
+        left: x,
+        opacity: opacity,
       }}
     >
       <Text position='center' htmlType='p' fontSize={wordHeight}>

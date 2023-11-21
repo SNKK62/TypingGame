@@ -71,7 +71,7 @@ const compose = (japanese: string): string[] => {
       const candidate2 = [];
       for (let j = 0; j < entry.keys.length; j++) {
         for (let k = 0; k < candidate.length; k++) {
-          candidate2.push(candidate[k] + entry.keys[j]);
+          candidate2.push((candidate[k] as string) + entry.keys[j]);
         }
       }
       candidate = candidate2;
@@ -81,25 +81,32 @@ const compose = (japanese: string): string[] => {
 };
 //平仮名3文字で1音節を構成する要素を引数にとり、平仮名1文字＋平仮名2文字に分けて入力パターンを全て網羅するキー入力パターンlistを返す。
 const compose12 = (japanese: string): string[] => {
-  let candidate = [];
+  let candidate: string[] = [];
   let entry = { char: '', keys: [''] };
   const singleMatched = L1KEY.find((e) => e.char === japanese[0]);
   if (singleMatched) {
     entry = singleMatched;
   }
-  for (let j = 0; j < entry.keys.length; j++) {
-    candidate.push(entry.keys[j]);
-  }
+  // for (let j = 0; j < entry.keys.length; j++) {
+  //   candidate.push(entry.keys[j]);
+  // }
+  entry.keys.forEach((key) => candidate.push(key));
   const doubleMatched = L2KEY.find((e) => e.char === japanese.slice(1, 3));
   if (doubleMatched) {
     entry = doubleMatched;
   }
-  const candidate2 = [];
-  for (let j = 0; j < entry.keys.length; j++) {
-    for (let k = 0; k < candidate.length; k++) {
-      candidate2.push(candidate[k] + entry.keys[j]);
-    }
-  }
+  const candidate2: string[] = [];
+  // for (let j = 0; j < entry.keys.length; j++) {
+  //   for (let k = 0; k < candidate.length; k++) {
+  //     candidate2.push(candidate[k] + entry.keys[j]);
+  //   }
+  // }
+  entry.keys.forEach((key) => {
+    candidate.forEach((can) => {
+      candidate2.push(can + key);
+    });
+  });
+
   candidate = candidate2;
   return candidate;
 };
@@ -179,6 +186,11 @@ export const loading = (e: string): [string[], string[], string[]] => {
     make_goal(japar) as string[],
     make_all_pattern(japar[0] as string, japar[1]),
   ];
+};
+
+//平仮名stringを引数にとり、お手本のキーlistのみを返す。未来のword用
+export const loadGoal = (e: string): string[] => {
+  return make_goal(construct_array(e));
 };
 
 //キーが入力された場合に現在の諸状況を引数にとり、正誤判定を行う。次のstate処理に必要な情報を適宜返す。
