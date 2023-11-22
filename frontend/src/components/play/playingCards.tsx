@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 
-import { Button } from '@/components/utils/button';
-import { loading, loadGoal, judge } from '@/utils/judgement';
+import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
 import { WordCard } from '../wordCard';
 
 export const PlayingCards = () => {
-  // const [gradation, setGradation] = useState<number>(1);
-  const [words, setWords] = useState<string[]>([
+  const words: string[] = [
     '朝鮮民主主義人民共和国',
     '中華人民共和国上海市',
     '東京特許許可局',
@@ -25,8 +23,8 @@ export const PlayingCards = () => {
     '',
     '',
     '',
-  ]);
-  const [kanas, setKanas] = useState<string[]>([
+  ]; //必ず4つの番兵をつける
+  const kanas: string[] = [
     'ちょうせんみんしゅしゅぎじんみんきょうわこく',
     'ちゅうかじんみんきょうわこくしゃんはいし',
     'とうきょうとっきょきょかきょく',
@@ -42,18 +40,18 @@ export const PlayingCards = () => {
     '-',
     '-',
     '-',
-  ]);
-  const [countS, setCountS] = useState<number>(0);
-  const [entered, setEntered] = useState<string>('');
-  const [pastInput, setPastInput] = useState<string[]>([]);
-  const [moveDown, setMoveDown] = useState<boolean>(true);
-  const [inputs, setInputs] = useState<string[]>([]);
-  const [allPattern, setAllPattern] = useState<string[]>([]);
+  ];
+  const [countS, setCountS] = useState<number>(0); //現在の音節番号
+  const [entered, setEntered] = useState<string>(''); //現在の音節において今までに入力したキー
+  const [pastInput, setPastInput] = useState<string[]>([]); //現在のwordにおいて過去の音節に入力したキー
+  const [moveDown, setMoveDown] = useState<boolean>(true); //WordCardの動作の有無を指定する。falseにしたら上に移動して徐々に下に降りる
+  const [inputs, setInputs] = useState<string[]>([]); //未来のwordsのお手本のキーを、過去のwordsの入力されたキーを格納する
+  const [allPattern, setAllPattern] = useState<string[]>([]); //現在の音節において許容される入力パターンの全て
   const [values, setValues] = useState<{
-    countW: number;
-    gradation: number;
-    keyarray: string[];
-    japanesearray: string[];
+    countW: number; //現在のwordsのインデックス
+    gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
+    keyarray: string[]; //現在のwordにおいて音節に分けたお手本キーの配列を入れる
+    japanesearray: string[]; //現在のwordにおいて音節に分けた平仮名の配列を入れる
   }>({
     countW: 0,
     gradation: 1,
@@ -69,10 +67,6 @@ export const PlayingCards = () => {
     document.documentElement.clientHeight ||
     document.body.clientHeight;
 
-  const onButtonPushed = () => {
-    setMoveDown(!moveDown);
-  };
-
   useEffect(() => {
     if (values.countW === 0) {
       const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
@@ -86,41 +80,40 @@ export const PlayingCards = () => {
       });
       setInputs([
         '',
-        loadGoal(kanas[1]).join(''),
-        loadGoal(kanas[2]).join(''),
-        loadGoal(kanas[3]).join(''),
+        loadGoal(kanas[1] as string).join(''),
+        loadGoal(kanas[2] as string).join(''),
+        loadGoal(kanas[3] as string).join(''),
       ]);
     }
-  }, [kanas, values.countW]);
+  }, [values.countW]);
   useEffect(() => {
     const handleKeyDown = (event: unknown) => {
-      console.log((event as React.KeyboardEvent).key);
       const [judgeType, newEntered, newAllPattern, newCount] = judge(
-        (event as React.KeyboardEvent).key as string,
+        (event as React.KeyboardEvent).key,
         values.japanesearray,
         countS,
         entered,
         allPattern,
         pastInput[countS - 1] as string,
       );
-      if (judgeType === 1) {
-        setCountS(newCount as number);
-        // setValues({ ...values, allpattern: newAllPattern as string[] });
-        setAllPattern(newAllPattern as string[]);
+      if (judgeType === JUDGE_TYPE.endOfSyllable) {
+        //音節の入力が完了した、かつWordの終わりではない場合
+        setCountS(newCount);
+        setAllPattern(newAllPattern);
         setEntered('');
-        setPastInput(pastInput.concat([newEntered as string]));
-      } else if (judgeType === 2) {
+        setPastInput(pastInput.concat([newEntered]));
+      } else if (judgeType === JUDGE_TYPE.endOfWord) {
+        //音節の入直が完了した、かつWordが終了した場合
         const newInputs = [...inputs];
-        newInputs[values.countW] = pastInput
-          .concat([newEntered as string])
-          .join('');
+        newInputs[values.countW] = pastInput.concat([newEntered]).join('');
         setInputs(newInputs);
         setMoveDown(false);
-      } else if (judgeType === 3) {
-        setEntered(newEntered as string);
-        // setValues({ ...values, allpattern: newAllPattern as string[] });
-        setAllPattern(newAllPattern as string[]);
-      } else if (judgeType === 4) {
+      } else if (judgeType === JUDGE_TYPE.midOfSyllable) {
+        //音節の途中の場合
+        setEntered(newEntered);
+        setAllPattern(newAllPattern);
+      } else if (judgeType === JUDGE_TYPE.correctN) {
+        //前の音節が「ん」でnで入力を終わらせていて、次にnを入力した場合
         setPastInput(pastInput.slice(0, countS - 1).concat(['nn']));
       }
     };
@@ -129,13 +122,23 @@ export const PlayingCards = () => {
     return () => {
       window.removeEventListener('keypress', handleKeyDown);
     };
-  }, [countS, entered, pastInput, values.countW, inputs]);
+  }, [
+    countS,
+    entered,
+    pastInput,
+    values.countW,
+    inputs,
+    allPattern,
+    values.japanesearray,
+  ]);
 
   useEffect(() => {
+    const delta = 0.04; //一度の更新でのgradationの変化量
+    const intervalTime = 10; //更新間隔(ms)
     let intervalId: NodeJS.Timer;
     if (!moveDown) {
       const a = values.countW + 1;
-      let temp = -0.04;
+      let newGrad = -delta;
       const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
         kanas[values.countW + 1] as string,
       );
@@ -144,8 +147,8 @@ export const PlayingCards = () => {
       setEntered('');
       intervalId = setInterval(() => {
         setValues((prevValues) => {
-          temp = temp + 0.04;
-          if (temp >= 1) {
+          newGrad = newGrad + delta;
+          if (newGrad >= 1) {
             clearInterval(intervalId);
             setMoveDown(true);
             setInputs(
@@ -155,24 +158,23 @@ export const PlayingCards = () => {
             );
             return { ...prevValues, gradation: 1 };
           }
-          if (temp <= 0) {
+          if (newGrad <= 0) {
             setAllPattern(tempAllPattern);
             return {
               countW: a,
-              gradation: temp,
+              gradation: newGrad,
               japanesearray: tempJapaneseArray,
               keyarray: tempKeyArray,
             };
           }
-          return { ...prevValues, gradation: temp };
+          return { ...prevValues, gradation: newGrad };
         });
-      }, 10);
+      }, intervalTime);
     }
     return () => clearInterval(intervalId);
   }, [moveDown]);
   return (
-    <div style={{ height: screenHeight, width: screenWidth }}>
-      <Button onClick={onButtonPushed}>Rotate!</Button>
+    <div>
       <WordCard
         word={words[values.countW + 2]}
         kanaPast={''}

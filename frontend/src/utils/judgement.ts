@@ -1,7 +1,7 @@
 import { L1KEY, L2KEY, L3KEY, KEY_AFTER_N } from './kana';
 
 //平仮名のstringを引数にとり、音節に分けた平仮名のlistを返す
-const construct_array = (japanese: string): string[] => {
+const constructArray = (japanese: string): string[] => {
   let i = 0;
   const array = [];
   while (i < japanese.length) {
@@ -27,7 +27,7 @@ const construct_array = (japanese: string): string[] => {
 };
 
 //音節分けされた平仮名listを引数にとり、個々の音節に対してお手本のキーを含むlistを返す
-const make_goal = (array: string[]): string[] => {
+const makeGoal = (array: string[]): string[] => {
   const answer = [];
   for (let i = 0; i < array.length; i++) {
     if (array[i].length === 1) {
@@ -137,7 +137,7 @@ const compose21 = (japanese: string): string[] => {
 };
 
 //音節の1要素を引数にとり、音節の入力パターンを全て網羅したキー入力パターンを返す。
-const make_all_pattern = (st: string, next: string | undefined): string[] => {
+const makeAllPattern = (st: string, next: string | undefined): string[] => {
   let pattern: string[] = [];
   if (st.length === 1) {
     if (st === 'ん') {
@@ -180,17 +180,25 @@ const isPrefixOf = (prefix: string, arr: string[]): boolean => {
 
 //新規単語が読み込まれた際に、平仮名stringを引数にとり、音節分けされた平仮名list,お手本キーlist,最初の音節の入力全パターンlistを返す。
 export const loading = (e: string): [string[], string[], string[]] => {
-  const japar = construct_array(e);
+  const japar = constructArray(e);
   return [
     japar,
-    make_goal(japar) as string[],
-    make_all_pattern(japar[0] as string, japar[1]),
+    makeGoal(japar) as string[],
+    makeAllPattern(japar[0] as string, japar[1]),
   ];
 };
 
 //平仮名stringを引数にとり、お手本のキーlistのみを返す。未来のword用
 export const loadGoal = (e: string): string[] => {
-  return make_goal(construct_array(e));
+  return makeGoal(constructArray(e));
+};
+
+export const JUDGE_TYPE = {
+  endOfSyllable: 1, //音節の終了かつwordの途中
+  endOfWord: 2, //音節の終了かつwordの終了
+  midOfSyllable: 3, //音節の途中
+  correctN: 4, //省略可能なn
+  wrong: 0, //不正解
 };
 
 //キーが入力された場合に現在の諸状況を引数にとり、正誤判定を行う。次のstate処理に必要な情報を適宜返す。
@@ -201,25 +209,30 @@ export const judge = (
   entered: string,
   allPattern: string[],
   previous: string,
-): [number, string | undefined, string[] | undefined, number | undefined] => {
+): [number, string, string[], number] => {
   const newEntereed: string = entered + e;
   if (isPrefixOf(newEntereed, allPattern)) {
+    //入力されたキーが正解の場合
     if (allPattern.includes(newEntereed)) {
+      //音節の入力が終了した場合
       if (count + 1 < japar.length) {
-        const newAllPattern: string[] = make_all_pattern(
+        //終了した音節がwordの最後では無い場合
+        const newAllPattern: string[] = makeAllPattern(
           japar[count + 1] as string,
           japar[count + 2],
         );
         const newcount: number = count + 1;
-        return [1, newEntereed, newAllPattern, newcount];
+        return [JUDGE_TYPE.endOfSyllable, newEntereed, newAllPattern, newcount];
       } else {
-        return [2, newEntereed, undefined, undefined];
+        //終了した音節がwordの最後だった場合
+        return [JUDGE_TYPE.endOfWord, newEntereed, [], 0];
       }
     } else {
+      //音節の途中だった場合
       const regislatedAllPattern = allPattern.filter((item) =>
         item.startsWith(newEntereed),
       );
-      return [3, newEntereed, regislatedAllPattern, undefined];
+      return [JUDGE_TYPE.midOfSyllable, newEntereed, regislatedAllPattern, 0];
     }
   } else if (
     previous === 'n' &&
@@ -227,7 +240,9 @@ export const judge = (
     japar[count - 1] === 'ん' &&
     e === 'n'
   ) {
-    return [4, undefined, undefined, undefined];
+    //一個前の音節が「ん」であり、その直後に省略可能なnを入力した場合
+    return [JUDGE_TYPE.correctN, '', [], 0];
   }
-  return [0, undefined, undefined, undefined];
+  //不正解だった場合
+  return [JUDGE_TYPE.wrong, '', [], 0];
 };
