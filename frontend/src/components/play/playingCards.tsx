@@ -6,54 +6,55 @@ import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
 import { WordCard } from '../wordCard';
 
+const words: string[] = [
+  '朝鮮民主主義人民共和国',
+  '中華人民共和国上海市',
+  '東京特許許可局',
+  '東京箱根間往復大学駅伝競走',
+  '信仰心理学',
+  '美容整形外科',
+  '環境保護活動家',
+  '経済学者協会',
+  '地球環境問題',
+  '科学技術振興機構',
+  '平等院鳳凰堂',
+  '',
+  '',
+  '',
+  '',
+]; //必ず4つの番兵をつける
+const kanas: string[] = [
+  'ちょうせんみんしゅしゅぎじんみんきょうわこく',
+  'ちゅうかじんみんきょうわこくしゃんはいし',
+  'とうきょうとっきょきょかきょく',
+  'とうきょうはこねかんおうふくだいがくえきでんきょうそう',
+  'しんこうしんりがく',
+  'びようせいけいげか',
+  'かんきょうほごかつどうか',
+  'けいざいがくしゃきょうかい',
+  'ちきゅうかんきょうもんだい',
+  'かがくぎじゅつしんこうきこう',
+  'びょうどういんほうおうどう',
+  '-',
+  '-',
+  '-',
+  '-',
+];
+
 export const PlayingCards = () => {
-  const words: string[] = [
-    '朝鮮民主主義人民共和国',
-    '中華人民共和国上海市',
-    '東京特許許可局',
-    '東京箱根間往復大学駅伝競走',
-    '信仰心理学',
-    '美容整形外科',
-    '環境保護活動家',
-    '経済学者協会',
-    '地球環境問題',
-    '科学技術振興機構',
-    '平等院鳳凰堂',
-    '',
-    '',
-    '',
-    '',
-  ]; //必ず4つの番兵をつける
-  const kanas: string[] = [
-    'ちょうせんみんしゅしゅぎじんみんきょうわこく',
-    'ちゅうかじんみんきょうわこくしゃんはいし',
-    'とうきょうとっきょきょかきょく',
-    'とうきょうはこねかんおうふくだいがくえきでんきょうそう',
-    'しんこうしんりがく',
-    'びようせいけいげか',
-    'かんきょうほごかつどうか',
-    'けいざいがくしゃきょうかい',
-    'ちきゅうかんきょうもんだい',
-    'かがくぎじゅつしんこうきこう',
-    'びょうどういんほうおうどう',
-    '-',
-    '-',
-    '-',
-    '-',
-  ];
-  const [countS, setCountS] = useState<number>(0); //現在の音節番号
+  const [soundIndex, setSoundIndex] = useState<number>(0); //現在の音節番号
   const [entered, setEntered] = useState<string>(''); //現在の音節において今までに入力したキー
   const [pastInput, setPastInput] = useState<string[]>([]); //現在のwordにおいて過去の音節に入力したキー
   const [moveDown, setMoveDown] = useState<boolean>(true); //WordCardの動作の有無を指定する。falseにしたら上に移動して徐々に下に降りる
   const [inputs, setInputs] = useState<string[]>([]); //未来のwordsのお手本のキーを、過去のwordsの入力されたキーを格納する
   const [allPattern, setAllPattern] = useState<string[]>([]); //現在の音節において許容される入力パターンの全て
   const [values, setValues] = useState<{
-    countW: number; //現在のwordsのインデックス
+    wordIndex: number; //現在のwordsのインデックス
     gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
     keyarray: string[]; //現在のwordにおいて音節に分けたお手本キーの配列を入れる
     japanesearray: string[]; //現在のwordにおいて音節に分けた平仮名の配列を入れる
   }>({
-    countW: 0,
+    wordIndex: 0,
     gradation: 1,
     japanesearray: [''],
     keyarray: [''],
@@ -68,16 +69,16 @@ export const PlayingCards = () => {
     document.body.clientHeight;
 
   useEffect(() => {
-    if (values.countW === 0) {
+    if (values.wordIndex === 0) {
       const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
         kanas[0] as string,
       );
       setAllPattern(tempAllPattern);
-      setValues({
-        ...values,
+      setValues((prev) => ({
+        ...prev,
         japanesearray: tempJapaneseArray,
         keyarray: tempKeyArray,
-      });
+      }));
       setInputs([
         '',
         loadGoal(kanas[1] as string).join(''),
@@ -85,27 +86,28 @@ export const PlayingCards = () => {
         loadGoal(kanas[3] as string).join(''),
       ]);
     }
-  }, [values.countW]);
+  }, [values.wordIndex]);
   useEffect(() => {
+    // TODO：eventの型要修正
     const handleKeyDown = (event: unknown) => {
       const [judgeType, newEntered, newAllPattern, newCount] = judge(
         (event as React.KeyboardEvent).key,
         values.japanesearray,
-        countS,
+        soundIndex,
         entered,
         allPattern,
-        pastInput[countS - 1] as string,
+        pastInput[soundIndex - 1] as string,
       );
       if (judgeType === JUDGE_TYPE.endOfSyllable) {
         //音節の入力が完了した、かつWordの終わりではない場合
-        setCountS(newCount);
+        setSoundIndex(newCount);
         setAllPattern(newAllPattern);
         setEntered('');
         setPastInput(pastInput.concat([newEntered]));
       } else if (judgeType === JUDGE_TYPE.endOfWord) {
-        //音節の入直が完了した、かつWordが終了した場合
+        //音節の入力が完了した、かつWordが終了した場合
         const newInputs = [...inputs];
-        newInputs[values.countW] = pastInput.concat([newEntered]).join('');
+        newInputs[values.wordIndex] = pastInput.concat([newEntered]).join('');
         setInputs(newInputs);
         setMoveDown(false);
       } else if (judgeType === JUDGE_TYPE.midOfSyllable) {
@@ -114,7 +116,7 @@ export const PlayingCards = () => {
         setAllPattern(newAllPattern);
       } else if (judgeType === JUDGE_TYPE.correctN) {
         //前の音節が「ん」でnで入力を終わらせていて、次にnを入力した場合
-        setPastInput(pastInput.slice(0, countS - 1).concat(['nn']));
+        setPastInput(pastInput.slice(0, soundIndex - 1).concat(['nn']));
       }
     };
 
@@ -123,10 +125,10 @@ export const PlayingCards = () => {
       window.removeEventListener('keypress', handleKeyDown);
     };
   }, [
-    countS,
+    soundIndex,
     entered,
     pastInput,
-    values.countW,
+    values.wordIndex,
     inputs,
     allPattern,
     values.japanesearray,
@@ -137,12 +139,12 @@ export const PlayingCards = () => {
     const intervalTime = 10; //更新間隔(ms)
     let intervalId: NodeJS.Timer;
     if (!moveDown) {
-      const a = values.countW + 1;
+      const a = values.wordIndex + 1;
       let newGrad = -delta;
       const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
-        kanas[values.countW + 1] as string,
+        kanas[values.wordIndex + 1] as string,
       );
-      setCountS(0);
+      setSoundIndex(0);
       setPastInput([]);
       setEntered('');
       intervalId = setInterval(() => {
@@ -153,7 +155,7 @@ export const PlayingCards = () => {
             setMoveDown(true);
             setInputs(
               inputs.concat(
-                loadGoal(kanas[values.countW + 4] as string).join(''),
+                loadGoal(kanas[values.wordIndex + 4] as string).join(''),
               ),
             );
             return { ...prevValues, gradation: 1 };
@@ -161,7 +163,7 @@ export const PlayingCards = () => {
           if (newGrad <= 0) {
             setAllPattern(tempAllPattern);
             return {
-              countW: a,
+              wordIndex: a,
               gradation: newGrad,
               japanesearray: tempJapaneseArray,
               keyarray: tempKeyArray,
@@ -176,60 +178,70 @@ export const PlayingCards = () => {
   return (
     <div>
       <WordCard
-        word={words[values.countW + 2]}
+        word={words[values.wordIndex + 2]}
         kanaPast={''}
         kanaNow={''}
-        kanaFuture={kanas[values.countW + 2]}
+        kanaFuture={kanas[values.wordIndex + 2]}
         keyPast={''}
         keyNow1={''}
         keyNow2={''}
-        keyFuture={inputs[values.countW + 2] ? inputs[values.countW + 2] : '.'}
+        keyFuture={
+          inputs[values.wordIndex + 2] ? inputs[values.wordIndex + 2] : '.'
+        }
         width={screenWidth * (31 / 60 + (values.gradation * 3) / 60)}
         height={screenHeight * (3 / 50 + values.gradation / 50)}
         x={screenWidth * (15 / 120 - (values.gradation * 3) / 120)}
         y={screenHeight * (-3 / 50 + (values.gradation * 4) / 50)}
         opacity={
-          words[values.countW + 2] !== '' ? 0.7 + values.gradation * 0.1 : 0
+          words[values.wordIndex + 2] !== '' ? 0.7 + values.gradation * 0.1 : 0
         }
       />
       <WordCard
-        word={words[values.countW + 1]}
+        word={words[values.wordIndex + 1]}
         kanaPast={''}
         kanaNow={''}
-        kanaFuture={kanas[values.countW + 1]}
+        kanaFuture={kanas[values.wordIndex + 1]}
         keyPast={''}
         keyNow1={''}
         keyNow2={''}
-        keyFuture={inputs[values.countW + 1] ? inputs[values.countW + 1] : '.'}
+        keyFuture={
+          inputs[values.wordIndex + 1] ? inputs[values.wordIndex + 1] : '.'
+        }
         width={screenWidth * (34 / 60 + (values.gradation * 3) / 60)}
         height={screenHeight * (4 / 50 + values.gradation / 50)}
         x={screenWidth * (12 / 120 - (values.gradation * 3) / 120)}
         y={screenHeight * (1 / 50 + (values.gradation * 5) / 50)}
         opacity={
-          words[values.countW + 1] !== '' ? 0.8 + values.gradation * 0.1 : 0
+          words[values.wordIndex + 1] !== '' ? 0.8 + values.gradation * 0.1 : 0
         }
       />
       <WordCard
-        word={words[values.countW]}
-        kanaPast={values.japanesearray.slice(0, countS).join('')}
-        kanaNow={values.japanesearray[countS]}
-        kanaFuture={values.japanesearray.slice(countS + 1).join('')}
+        word={words[values.wordIndex]}
+        kanaPast={values.japanesearray.slice(0, soundIndex).join('')}
+        kanaNow={values.japanesearray[soundIndex]}
+        kanaFuture={values.japanesearray.slice(soundIndex + 1).join('')}
         keyPast={pastInput.join('')}
         keyNow1={entered}
         keyNow2={allPattern[0]?.slice(entered.length)}
-        keyFuture={values.keyarray.slice(countS + 1).join('')}
+        keyFuture={values.keyarray.slice(soundIndex + 1).join('')}
         width={screenWidth * (37 / 60 + (values.gradation * 3) / 60)}
         height={screenHeight * (5 / 50 + values.gradation / 50)}
         x={screenWidth * (9 / 120 - (values.gradation * 3) / 120)}
         y={screenHeight * (6 / 50 + (values.gradation * 6) / 50)}
-        opacity={words[values.countW] !== '' ? 0.9 + values.gradation * 0.1 : 0}
+        opacity={
+          words[values.wordIndex] !== '' ? 0.9 + values.gradation * 0.1 : 0
+        }
       />
       <WordCard
-        word={words[values.countW - 1] ? words[values.countW - 1] : '.'}
-        kanaPast={kanas[values.countW - 1] ? kanas[values.countW - 1] : '.'}
+        word={words[values.wordIndex - 1] ? words[values.wordIndex - 1] : '.'}
+        kanaPast={
+          kanas[values.wordIndex - 1] ? kanas[values.wordIndex - 1] : '.'
+        }
         kanaNow={''}
         kanaFuture={''}
-        keyPast={inputs[values.countW - 1] ? inputs[values.countW - 1] : '-'}
+        keyPast={
+          inputs[values.wordIndex - 1] ? inputs[values.wordIndex - 1] : '-'
+        }
         keyNow1={''}
         keyNow2={''}
         keyFuture={''}

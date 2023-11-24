@@ -81,7 +81,7 @@ const compose = (japanese: string): string[] => {
 };
 //平仮名3文字で1音節を構成する要素を引数にとり、平仮名1文字＋平仮名2文字に分けて入力パターンを全て網羅するキー入力パターンlistを返す。
 const compose12 = (japanese: string): string[] => {
-  let candidate: string[] = [];
+  const candidate: string[] = [];
   let entry = { char: '', keys: [''] };
   const singleMatched = L1KEY.find((e) => e.char === japanese[0]);
   if (singleMatched) {
@@ -107,13 +107,13 @@ const compose12 = (japanese: string): string[] => {
     });
   });
 
-  candidate = candidate2;
-  return candidate;
+  // candidate = candidate2;
+  return candidate2;
 };
 
 //平仮名3文字で1音節を構成する要素を引数にとり、平仮名2文字＋平仮名1文字に分けて入力パターンを全て網羅するキー入力パターンlistを返す。
 const compose21 = (japanese: string): string[] => {
-  let candidate = [];
+  const candidate = [];
   let entry = { char: '', keys: [''] };
   const doubleMatched = L2KEY.find((e) => e.char === japanese.slice(0, 2));
   if (doubleMatched) {
@@ -132,8 +132,8 @@ const compose21 = (japanese: string): string[] => {
       candidate2.push(candidate[k] + entry.keys[j]);
     }
   }
-  candidate = candidate2;
-  return candidate;
+  // candidate = candidate2;
+  return candidate2;
 };
 
 //音節の1要素を引数にとり、音節の入力パターンを全て網羅したキー入力パターンを返す。
@@ -210,10 +210,10 @@ export const judge = (
   allPattern: string[],
   previous: string,
 ): [number, string, string[], number] => {
-  const newEntereed: string = entered + e;
-  if (isPrefixOf(newEntereed, allPattern)) {
+  const newEntered: string = entered + e;
+  if (isPrefixOf(newEntered, allPattern)) {
     //入力されたキーが正解の場合
-    if (allPattern.includes(newEntereed)) {
+    if (allPattern.includes(newEntered)) {
       //音節の入力が終了した場合
       if (count + 1 < japar.length) {
         //終了した音節がwordの最後では無い場合
@@ -222,17 +222,17 @@ export const judge = (
           japar[count + 2],
         );
         const newcount: number = count + 1;
-        return [JUDGE_TYPE.endOfSyllable, newEntereed, newAllPattern, newcount];
+        return [JUDGE_TYPE.endOfSyllable, newEntered, newAllPattern, newcount];
       } else {
         //終了した音節がwordの最後だった場合
-        return [JUDGE_TYPE.endOfWord, newEntereed, [], 0];
+        return [JUDGE_TYPE.endOfWord, newEntered, [], 0];
       }
     } else {
       //音節の途中だった場合
       const regislatedAllPattern = allPattern.filter((item) =>
-        item.startsWith(newEntereed),
+        item.startsWith(newEntered),
       );
-      return [JUDGE_TYPE.midOfSyllable, newEntereed, regislatedAllPattern, 0];
+      return [JUDGE_TYPE.midOfSyllable, newEntered, regislatedAllPattern, 0];
     }
   } else if (
     previous === 'n' &&
