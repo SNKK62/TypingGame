@@ -96,18 +96,11 @@ const compose12 = (japanese: string): string[] => {
     entry = doubleMatched;
   }
   const candidate2: string[] = [];
-  // for (let j = 0; j < entry.keys.length; j++) {
-  //   for (let k = 0; k < candidate.length; k++) {
-  //     candidate2.push(candidate[k] + entry.keys[j]);
-  //   }
-  // }
   entry.keys.forEach((key) => {
     candidate.forEach((can) => {
       candidate2.push(can + key);
     });
   });
-
-  // candidate = candidate2;
   return candidate2;
 };
 
@@ -132,7 +125,6 @@ const compose21 = (japanese: string): string[] => {
       candidate2.push(candidate[k] + entry.keys[j]);
     }
   }
-  // candidate = candidate2;
   return candidate2;
 };
 
