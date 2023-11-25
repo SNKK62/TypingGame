@@ -1,4 +1,5 @@
 import { PlayContainer } from './container';
+
 const Page = () => (
   <>
     <PlayContainer />

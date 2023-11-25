@@ -87,9 +87,6 @@ const compose12 = (japanese: string): string[] => {
   if (singleMatched) {
     entry = singleMatched;
   }
-  // for (let j = 0; j < entry.keys.length; j++) {
-  //   candidate.push(entry.keys[j]);
-  // }
   entry.keys.forEach((key) => candidate.push(key));
   const doubleMatched = L2KEY.find((e) => e.char === japanese.slice(1, 3));
   if (doubleMatched) {
