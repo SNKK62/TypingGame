@@ -1,8 +1,8 @@
 {
-  "root": true, 
+  "root": true,
   "env": {
-    "browser": true,     
-    "es2020": true 
+    "browser": true,
+    "es2020": true
   },
   "extends": [
     "eslint:recommended",
@@ -16,7 +16,7 @@
     "plugin:react-hooks/recommended",
     "prettier"
   ],
-  "parser": "@typescript-eslint/parser", 
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
@@ -24,15 +24,23 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "react", "react-hooks", "import", "prettier", "jsx-a11y", "jest"],
+  "plugins": [
+    "@typescript-eslint",
+    "react",
+    "react-hooks",
+    "import",
+    "prettier",
+    "jsx-a11y",
+    "jest"
+  ],
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"] 
+        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
       },
 
       "typescript": {
-        "config": "tsconfig.json", 
+        "config": "tsconfig.json",
         "alwaysTryTypes": true
       }
     },
@@ -43,10 +51,7 @@
   "rules": {
     "react/prop-types": "off",
     "react/react-in-jsx-scope": "off",
-    "react/jsx-filename-extension": [
-      "error",
-      { "extensions": [".jsx", ".tsx"] }
-    ],
+    "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
     "prettier/prettier": [
       "error",
       {
@@ -55,7 +60,7 @@
         "semi": true,
         "singleQuote": true,
         "jsxSingleQuote": true,
-        "printWidth": 80,
+        "printWidth": 100,
         "tabWidth": 2
       }
     ]
@@ -65,41 +70,33 @@
       "files": ["*.ts", "*.tsx"],
       "rules": {
         "import/order": [
-        "error",
-        {
-          "groups": [
-            "builtin",
-            "external",
-            "parent",
-            "sibling",
-            "index",
-            "object",
-            "type"
-          ],
-          "newlines-between": "always",
-          "pathGroups": [
-            {
-              "pattern": "react** | next**",
-              "group": "external",
-              "position": "before"
-            },
-            {
-              "pattern": "@/**",
-              "group": "parent",
-              "position": "before"
-            },
-            {
-              "pattern": "**/*.module.css",
-              "group": "type",
-              "position": "after"
+          "error",
+          {
+            "groups": ["builtin", "external", "parent", "sibling", "index", "object", "type"],
+            "newlines-between": "always",
+            "pathGroups": [
+              {
+                "pattern": "react** | next**",
+                "group": "external",
+                "position": "before"
+              },
+              {
+                "pattern": "@/**",
+                "group": "parent",
+                "position": "before"
+              },
+              {
+                "pattern": "**/*.module.css",
+                "group": "type",
+                "position": "after"
+              }
+            ],
+            "pathGroupsExcludedImportTypes": ["builtin"],
+            "alphabetize": {
+              "order": "asc",
+              "caseInsensitive": true
             }
-          ],
-          "pathGroupsExcludedImportTypes": ["builtin"],
-          "alphabetize": {
-            "order": "asc",
-            "caseInsensitive": true
           }
-        }
         ]
       }
     }

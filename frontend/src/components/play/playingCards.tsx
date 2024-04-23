@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
 import { WordCard } from '../wordCard';
+
+import { Keyboard } from './keyboard';
 
 const words: string[] = [
   '朝鮮民主主義人民共和国',
@@ -48,6 +50,8 @@ export const PlayingCards = () => {
   const [moveDown, setMoveDown] = useState<boolean>(true); //WordCardの動作の有無を指定する。falseにしたら上に移動して徐々に下に降りる
   const [inputs, setInputs] = useState<string[]>([]); //未来のwordsのお手本のキーを、過去のwordsの入力されたキーを格納する
   const [allPattern, setAllPattern] = useState<string[]>([]); //現在の音節において許容される入力パターンの全て
+  const [correct, setCorrect] = useState<string>(''); //正解したフラグ(キーボードが緑に光る)
+  const [wrong, setWrong] = useState<string>(''); //不正解したフラグ(キーボードが赤に光る)
   const [values, setValues] = useState<{
     wordIndex: number; //現在のwordsのインデックス
     gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
@@ -60,19 +64,23 @@ export const PlayingCards = () => {
     keyarray: [''],
   });
   const screenWidth =
-    window.innerWidth ||
-    document.documentElement.clientWidth ||
-    document.body.clientWidth;
+    window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
   const screenHeight =
-    window.innerHeight ||
-    document.documentElement.clientHeight ||
-    document.body.clientHeight;
+    window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+  useEffect(() => {
+    if (correct || wrong) {
+      const timer = setTimeout(() => {
+        setCorrect('');
+        setWrong('');
+      }, 80); // 80ms後にfalseに変更
+      return () => clearTimeout(timer); // タイマークリア
+    }
+  }, [correct, wrong]);
 
   useEffect(() => {
     if (values.wordIndex === 0) {
-      const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
-        kanas[0] as string,
-      );
+      const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(kanas[0] as string);
       setAllPattern(tempAllPattern);
       setValues((prev) => ({
         ...prev,
@@ -104,19 +112,25 @@ export const PlayingCards = () => {
         setAllPattern(newAllPattern);
         setEntered('');
         setPastInput(pastInput.concat([newEntered]));
+        setCorrect((event as React.KeyboardEvent).key);
       } else if (judgeType === JUDGE_TYPE.endOfWord) {
         //音節の入力が完了した、かつWordが終了した場合
         const newInputs = [...inputs];
         newInputs[values.wordIndex] = pastInput.concat([newEntered]).join('');
         setInputs(newInputs);
         setMoveDown(false);
+        setCorrect((event as React.KeyboardEvent).key);
       } else if (judgeType === JUDGE_TYPE.midOfSyllable) {
         //音節の途中の場合
         setEntered(newEntered);
         setAllPattern(newAllPattern);
+        setCorrect((event as React.KeyboardEvent).key);
       } else if (judgeType === JUDGE_TYPE.correctN) {
         //前の音節が「ん」でnで入力を終わらせていて、次にnを入力した場合
         setPastInput(pastInput.slice(0, soundIndex - 1).concat(['nn']));
+        setCorrect((event as React.KeyboardEvent).key);
+      } else {
+        setWrong((event as React.KeyboardEvent).key);
       }
     };
 
@@ -124,15 +138,7 @@ export const PlayingCards = () => {
     return () => {
       window.removeEventListener('keypress', handleKeyDown);
     };
-  }, [
-    soundIndex,
-    entered,
-    pastInput,
-    values.wordIndex,
-    inputs,
-    allPattern,
-    values.japanesearray,
-  ]);
+  }, [soundIndex, entered, pastInput, values.wordIndex, inputs, allPattern, values.japanesearray]);
 
   useEffect(() => {
     const delta = 0.04; //一度の更新でのgradationの変化量
@@ -153,11 +159,7 @@ export const PlayingCards = () => {
           if (newGrad >= 1) {
             clearInterval(intervalId);
             setMoveDown(true);
-            setInputs(
-              inputs.concat(
-                loadGoal(kanas[values.wordIndex + 4] as string).join(''),
-              ),
-            );
+            setInputs(inputs.concat(loadGoal(kanas[values.wordIndex + 4] as string).join('')));
             return { ...prevValues, gradation: 1 };
           }
           if (newGrad <= 0) {
@@ -185,16 +187,12 @@ export const PlayingCards = () => {
         keyPast={''}
         keyNow1={''}
         keyNow2={''}
-        keyFuture={
-          inputs[values.wordIndex + 2] ? inputs[values.wordIndex + 2] : '.'
-        }
+        keyFuture={inputs[values.wordIndex + 2] ? inputs[values.wordIndex + 2] : '.'}
         width={screenWidth * (31 / 60 + (values.gradation * 3) / 60)}
         height={screenHeight * (3 / 50 + values.gradation / 50)}
         x={screenWidth * (15 / 120 - (values.gradation * 3) / 120)}
         y={screenHeight * (-3 / 50 + (values.gradation * 4) / 50)}
-        opacity={
-          words[values.wordIndex + 2] !== '' ? 0.7 + values.gradation * 0.1 : 0
-        }
+        opacity={words[values.wordIndex + 2] !== '' ? 0.4 + values.gradation * 0.2 : 0}
       />
       <WordCard
         word={words[values.wordIndex + 1]}
@@ -204,16 +202,12 @@ export const PlayingCards = () => {
         keyPast={''}
         keyNow1={''}
         keyNow2={''}
-        keyFuture={
-          inputs[values.wordIndex + 1] ? inputs[values.wordIndex + 1] : '.'
-        }
+        keyFuture={inputs[values.wordIndex + 1] ? inputs[values.wordIndex + 1] : '.'}
         width={screenWidth * (34 / 60 + (values.gradation * 3) / 60)}
         height={screenHeight * (4 / 50 + values.gradation / 50)}
         x={screenWidth * (12 / 120 - (values.gradation * 3) / 120)}
         y={screenHeight * (1 / 50 + (values.gradation * 5) / 50)}
-        opacity={
-          words[values.wordIndex + 1] !== '' ? 0.8 + values.gradation * 0.1 : 0
-        }
+        opacity={words[values.wordIndex + 1] !== '' ? 0.6 + values.gradation * 0.2 : 0}
       />
       <WordCard
         word={words[values.wordIndex]}
@@ -228,20 +222,14 @@ export const PlayingCards = () => {
         height={screenHeight * (5 / 50 + values.gradation / 50)}
         x={screenWidth * (9 / 120 - (values.gradation * 3) / 120)}
         y={screenHeight * (6 / 50 + (values.gradation * 6) / 50)}
-        opacity={
-          words[values.wordIndex] !== '' ? 0.9 + values.gradation * 0.1 : 0
-        }
+        opacity={words[values.wordIndex] !== '' ? 0.8 + values.gradation * 0.2 : 0}
       />
       <WordCard
         word={words[values.wordIndex - 1] ? words[values.wordIndex - 1] : '.'}
-        kanaPast={
-          kanas[values.wordIndex - 1] ? kanas[values.wordIndex - 1] : '.'
-        }
+        kanaPast={kanas[values.wordIndex - 1] ? kanas[values.wordIndex - 1] : '.'}
         kanaNow={''}
         kanaFuture={''}
-        keyPast={
-          inputs[values.wordIndex - 1] ? inputs[values.wordIndex - 1] : '-'
-        }
+        keyPast={inputs[values.wordIndex - 1] ? inputs[values.wordIndex - 1] : '-'}
         keyNow1={''}
         keyNow2={''}
         keyFuture={''}
@@ -251,6 +239,14 @@ export const PlayingCards = () => {
         y={screenHeight * (12 / 50 + (values.gradation * 7) / 50)}
         opacity={1 - values.gradation}
       />
+      <Keyboard
+        screenWidth={screenWidth}
+        screenHeight={screenHeight}
+        correct={correct}
+        wrong={wrong}
+        candidate={allPattern.map((str) => str.charAt(entered.length))}
+        shiftPressed={false}
+      ></Keyboard>
     </div>
   );
 };

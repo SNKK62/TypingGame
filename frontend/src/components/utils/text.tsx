@@ -15,12 +15,7 @@ export const Text: React.FC<TextProps> = ({
   const variant = htmlType === 'p' ? 'body1' : htmlType;
   const style = { width: '100%' };
   return (
-    <Typography
-      align={position}
-      variant={variant}
-      sx={style}
-      fontSize={fontSize}
-    >
+    <Typography align={position} variant={variant} sx={style} fontSize={fontSize}>
       {children}
     </Typography>
   );

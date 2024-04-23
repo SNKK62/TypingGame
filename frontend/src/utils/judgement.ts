@@ -170,11 +170,7 @@ const isPrefixOf = (prefix: string, arr: string[]): boolean => {
 //新規単語が読み込まれた際に、平仮名stringを引数にとり、音節分けされた平仮名list,お手本キーlist,最初の音節の入力全パターンlistを返す。
 export const loading = (e: string): [string[], string[], string[]] => {
   const japar = constructArray(e);
-  return [
-    japar,
-    makeGoal(japar) as string[],
-    makeAllPattern(japar[0] as string, japar[1]),
-  ];
+  return [japar, makeGoal(japar) as string[], makeAllPattern(japar[0] as string, japar[1])];
 };
 
 //平仮名stringを引数にとり、お手本のキーlistのみを返す。未来のword用
@@ -218,17 +214,10 @@ export const judge = (
       }
     } else {
       //音節の途中だった場合
-      const regislatedAllPattern = allPattern.filter((item) =>
-        item.startsWith(newEntered),
-      );
+      const regislatedAllPattern = allPattern.filter((item) => item.startsWith(newEntered));
       return [JUDGE_TYPE.midOfSyllable, newEntered, regislatedAllPattern, 0];
     }
-  } else if (
-    previous === 'n' &&
-    !entered &&
-    japar[count - 1] === 'ん' &&
-    e === 'n'
-  ) {
+  } else if (previous === 'n' && !entered && japar[count - 1] === 'ん' && e === 'n') {
     //一個前の音節が「ん」であり、その直後に省略可能なnを入力した場合
     return [JUDGE_TYPE.correctN, '', [], 0];
   }
