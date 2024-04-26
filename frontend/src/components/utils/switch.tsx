@@ -3,14 +3,7 @@ import RawSwitch from '@mui/material/Switch';
 interface SwitchProps {
   // checkedIcon?: React.ReactNode;
   checked: boolean;
-  color?:
-    | 'default'
-    | 'primary'
-    | 'secondary'
-    | 'error'
-    | 'info'
-    | 'success'
-    | 'warning';
+  color?: 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
   disabled?: boolean;
   edge?: 'end' | 'start' | false;
   // icon?: string;

@@ -119,9 +119,7 @@ export const ImageInput: React.FC<ImageInputProps> = ({
   onImageChange,
   maxSize = Infinity,
 }) => {
-  const onChangeFileInput = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
+  const onChangeFileInput = (event: React.ChangeEvent<HTMLInputElement>): void => {
     if (event.target.files?.length === 0) {
       return;
     } else if (event.target.files?.[0] === undefined) {
@@ -136,13 +134,7 @@ export const ImageInput: React.FC<ImageInputProps> = ({
   };
   return (
     <>
-      <input
-        type='file'
-        accept='image/*'
-        id={id}
-        onChange={onChangeFileInput}
-        hidden={true}
-      />
+      <input type='file' accept='image/*' id={id} onChange={onChangeFileInput} hidden={true} />
       {children}
     </>
   );

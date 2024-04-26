@@ -3,14 +3,7 @@ import RawButton from '@mui/material/Button';
 interface ButtonProps {
   variant?: 'text' | 'contained' | 'outlined';
   disabled?: boolean;
-  color?:
-    | 'inherit'
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'error'
-    | 'info'
-    | 'warning';
+  color?: 'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning';
   startIcon?: React.ReactNode;
   href?: string;
   width?: string;

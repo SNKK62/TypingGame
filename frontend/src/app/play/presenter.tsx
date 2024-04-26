@@ -1,6 +1,5 @@
-
-import { PlayingCards } from '@/components/play/playingCards';
+import { Playing } from '@/components/play/playing';
 
 export const Presenter = () => {
-  return <PlayingCards />;
+  return <Playing />;
 };
