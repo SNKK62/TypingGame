@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
 import { Cards } from './cards';
+import { FinishModal } from './finishModal';
 import { Keyboard } from './keyboard';
 import { ScoreBoard } from './scoreBoard';
 import { WaitingModal } from './waitingModal';
-import { FinishModal } from './finishModal';
 
 const words: string[] = [
   //必ず後ろに4つの番兵をつける
@@ -46,7 +46,7 @@ const kanas: string[] = [
   '-',
 ];
 
-const limitTime = 300; //制限時間(秒×10)
+const limitTime = 100; //制限時間(秒×10)
 
 const calcScore = (combo: number) => {
   if (combo >= 90) return 100;
@@ -54,6 +54,7 @@ const calcScore = (combo: number) => {
 };
 
 export const Playing = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0); //現在の音節番号
   const [entered, setEntered] = useState<string>(''); //現在の音節において今までに入力したキー
   const [pastInput, setPastInput] = useState<string[]>([]); //現在のwordにおいて過去の音節に入力したキー
@@ -66,15 +67,14 @@ export const Playing = () => {
   const [combo, setCombo] = useState<number>(0); //連続して正解した数
   const [accurateCount, setAccurateCount] = useState<number>(0);
   const [missCount, setMissCount] = useState<number>(0);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [time, setTime] = useState<number>(limitTime);
   const intervalRef = useRef(null);
-  const [screenWidth, setScreenWidth] = useState(
-    document.documentElement.clientWidth || document.body.clientWidth,
-  );
-  const [screenHeight, setScreenHeight] = useState(
-    document.documentElement.clientHeight || document.body.clientHeight,
-  );
+  const [screenWidth, setScreenWidth] = useState<number | undefined>(undefined);
+  //   document.documentElement.clientWidth || document.body.clientWidth,
+  // );
+  const [screenHeight, setScreenHeight] = useState<number | undefined>(undefined);
+  //   document.documentElement.clientHeight || document.body.clientHeight,
+  // );
   const [values, setValues] = useState<{
     wordIndex: number; //現在のwordsのインデックス
     gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
@@ -88,11 +88,16 @@ export const Playing = () => {
   });
 
   const handleStart = () => {
-    setIsProcessing(true);
     intervalRef.current = setInterval(() => {
       setTime((prevTime) => prevTime - 1);
     }, 100);
   };
+
+  useEffect(() => {
+    setScreenWidth(window.innerWidth);
+    setScreenHeight(window.innerHeight);
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     if (isCorrect || isWrong) {
@@ -121,9 +126,9 @@ export const Playing = () => {
       ]);
     }
   }, [values.wordIndex]);
-  useEffect(() => {
-    // TODO：eventの型要修正
-    const handleKeyDown = (event: unknown) => {
+
+  const handleKeyDown = useCallback(
+    (event: unknown) => {
       if (time < 0) return; // 時間外では操作不能にする
       if (time >= limitTime) {
         if ((event as React.KeyboardEvent).key === ' ') {
@@ -146,7 +151,7 @@ export const Playing = () => {
         setEntered('');
         setPastInput(pastInput.concat([newEntered]));
         setIsCorrect((event as React.KeyboardEvent).key);
-        setScore(score + calcScore(combo));
+        setScore((prevScore) => prevScore + calcScore(combo));
         setCombo((prevCombo) => {
           return prevCombo + 1;
         });
@@ -160,7 +165,7 @@ export const Playing = () => {
         setInputs(newInputs);
         setMoveDown(false);
         setIsCorrect((event as React.KeyboardEvent).key);
-        setScore(score + calcScore(combo));
+        setScore((prevScore) => prevScore + calcScore(combo));
         setCombo((prevCombo) => {
           return prevCombo + 1;
         });
@@ -172,7 +177,7 @@ export const Playing = () => {
         setEntered(newEntered);
         setAllPattern(newAllPattern);
         setIsCorrect((event as React.KeyboardEvent).key);
-        setScore(score + calcScore(combo));
+        setScore((prevScore) => prevScore + calcScore(combo));
         setCombo((prevCombo) => {
           return prevCombo + 1;
         });
@@ -183,7 +188,7 @@ export const Playing = () => {
         //前の音節が「ん」でnで入力を終わらせていて、次にnを入力した場合
         setPastInput(pastInput.slice(0, soundIndex - 1).concat(['nn']));
         setIsCorrect((event as React.KeyboardEvent).key);
-        setScore(score + calcScore(combo));
+        setScore((prevScore) => prevScore + calcScore(combo));
         setCombo((prevCombo) => {
           return prevCombo + 1;
         });
@@ -197,31 +202,33 @@ export const Playing = () => {
           return prevCount + 1;
         });
       }
-    };
+    },
+    [
+      soundIndex,
+      entered,
+      pastInput,
+      values.wordIndex,
+      inputs,
+      allPattern,
+      values.japanesearray,
+      time,
+      combo,
+    ],
+  );
 
+  useEffect(() => {
     window.addEventListener('keypress', handleKeyDown);
     return () => {
       window.removeEventListener('keypress', handleKeyDown);
     };
-  }, [
-    soundIndex,
-    entered,
-    pastInput,
-    values.wordIndex,
-    inputs,
-    allPattern,
-    values.japanesearray,
-    time,
-  ]);
+  }, [handleKeyDown]);
 
   useEffect(() => {
     const handleResize = () => {
       setScreenWidth(window.innerWidth);
       setScreenHeight(window.innerHeight);
     }; // リアルタイムでのスクリーンの広さ情報の更新
-
     window.addEventListener('resize', handleResize);
-
     return () => {
       window.removeEventListener('resize', handleResize);
     };
@@ -272,8 +279,8 @@ export const Playing = () => {
     <div
       style={{
         backgroundImage: 'url("backgroundImage.png")',
-        height: screenHeight,
-        width: screenWidth,
+        height: '100vh',
+        width: '100vw',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
       }}
@@ -296,30 +303,34 @@ export const Playing = () => {
         card4word={words[values.wordIndex - 1] ? words[values.wordIndex - 1] : '.'}
         card4kana={kanas[values.wordIndex - 1] ? kanas[values.wordIndex - 1] : '.'}
         card4key={inputs[values.wordIndex - 1] ? inputs[values.wordIndex - 1] : '-'}
-        screenHeight={screenHeight}
-        screenWidth={screenWidth}
+        screenHeight={screenHeight as number}
+        screenWidth={screenWidth as number}
         gradation={values.gradation}
         isCorrect={isCorrect}
         isWrong={isWrong}
         isTransparent={time >= limitTime}
       ></Cards>
-      <Keyboard
-        screenWidth={screenWidth}
-        screenHeight={screenHeight}
-        correct={isCorrect}
-        wrong={isWrong}
-        candidate={allPattern.map((str) => str.charAt(entered.length))}
-        shiftPressed={false}
-      ></Keyboard>
-      <ScoreBoard
-        score={score}
-        remTime={time / 10}
-        combo={combo}
-        accurateCount={accurateCount}
-        missCount={missCount}
-        screenHeight={screenHeight}
-        screenWidth={screenWidth}
-      ></ScoreBoard>
+      {!isLoading && (
+        <div>
+          <Keyboard
+            screenWidth={screenWidth as number}
+            screenHeight={screenHeight as number}
+            correct={isCorrect}
+            wrong={isWrong}
+            candidate={allPattern.map((str) => str.charAt(entered.length))}
+            shiftPressed={false}
+          ></Keyboard>
+          <ScoreBoard
+            score={score}
+            remTime={time / 10}
+            combo={combo}
+            accurateCount={accurateCount}
+            missCount={missCount}
+            screenHeight={screenHeight as number}
+            screenWidth={screenWidth as number}
+          ></ScoreBoard>
+        </div>
+      )}
 
       <WaitingModal isOpen={time >= limitTime} funct={handleStart}></WaitingModal>
       <FinishModal
@@ -328,8 +339,8 @@ export const Playing = () => {
         combo={combo}
         accurateCount={accurateCount}
         missCount={missCount}
-        screenHeight={screenHeight}
-        screenWidth={screenWidth}
+        screenHeight={screenHeight as number}
+        screenWidth={screenWidth as number}
         limitTime={limitTime}
       ></FinishModal>
     </div>

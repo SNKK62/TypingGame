@@ -2,6 +2,7 @@ import React from 'react';
 import Modal from 'react-modal';
 
 import { Button } from '../utils/button';
+
 import { ScoreBoard } from './scoreBoard';
 
 interface Props {
@@ -44,7 +45,7 @@ export const FinishModal: React.FC<Props> = ({
         },
       }}
     >
-      <h2>Time is over! Here's your result!</h2>
+      <h2>Time is over! Here&apos;s your result!</h2>
       <ScoreBoard
         score={score}
         remTime={0}
@@ -55,7 +56,7 @@ export const FinishModal: React.FC<Props> = ({
         screenWidth={screenWidth}
         limitTime={limitTime}
       ></ScoreBoard>
-      <div style={{ padding: '10px 140px' }}>
+      <div style={{ padding: '10px 130px' }}>
         <Button
           onClick={() => {
             window.location.reload();
