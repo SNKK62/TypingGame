@@ -27,24 +27,24 @@ export const Key: React.FC<Props> = ({
   return (
     <div
       style={{
-        top: !(isCorrect || isWrong) ? top : top + 5,
+        top: !(isCorrect || isWrong) ? top : top + 6,
         left: left,
         aspectRatio: '1/1',
         width: width,
         position: 'absolute',
-        borderRadius: '4px',
+        borderRadius: '5px',
         color: isCorrect ? 'skybkue' : isRecommended ? 'yellow' : 'white',
         backgroundImage: isWrong
           ? 'linear-gradient(45deg, orange 0%, red 100%)'
           : isRecommended
-          ? 'linear-gradient(45deg, skyblue 0%, skyblue 100%)'
+          ? 'linear-gradient(45deg, #666666 0%, #6666ff 100%)'
           : isOneOfCandiate
-          ? 'linear-gradient(45deg, gray 0%, skyblue 100%)'
+          ? 'linear-gradient(45deg, #666666 0%, #6666bb 100%)'
           : isCorrect
-          ? 'linear-gradient(45deg, skyblue 0%, blue 100%)'
-          : 'linear-gradient(45deg, darkgray 0%, gray 100%)',
+          ? 'linear-gradient(45deg, #00ff00 0%, #00cccc 100%)'
+          : 'linear-gradient(45deg, #333333 0%, #666666 100%)',
         boxShadow:
-          isCorrect || isWrong ? '0px 0px 1px rgba(0,0,0,0.29)' : '0px 5px 2px rgba(0,0,0,0.29)',
+          isCorrect || isWrong ? '0px 0px 1px rgba(0,0,0,0.29)' : '0px 6px 2px rgba(0,0,0,0.29)',
         borderBottom: isCorrect || isWrong ? 'none' : 'solid 3px gray',
         fontSize: width / 2,
         lineHeight: '1rem',

@@ -20,7 +20,7 @@ export const Keyboard: React.FC<Props> = ({
   correct,
   wrong,
   candidate,
-  shiftPressed,
+  //   shiftPressed,
 }) => {
   return (
     <div>
