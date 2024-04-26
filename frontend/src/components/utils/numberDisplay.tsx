@@ -88,23 +88,6 @@ export const NumberDisplay: React.FC<Props> = ({
             {Math.floor(num * 10) % 10}
           </p>
         )}
-        {/* {decimal && (
-          <p
-            style={{
-              backgroundColor: 'whitesmoke',
-              height: height,
-              width: width,
-              fontSize: fontSize,
-              justifyContent: 'center',
-              fontWeight: 'bold',
-              borderRadius: '4px',
-              marginRight: '5px',
-              textAlign: 'center',
-            }}
-          >
-            {Math.floor(num * 100) % 10}
-          </p>
-        )} */}
         {scale && (
           <p
             style={{

@@ -86,10 +86,6 @@ export const Playing = () => {
     japanesearray: [''],
     keyarray: [''],
   });
-  // const screenWidth =
-  //   window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-  // const screenHeight =
-  //   window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
   const handleStart = () => {
     setIsProcessing(true);
@@ -271,14 +267,6 @@ export const Playing = () => {
     }
     return () => clearInterval(intervalId);
   }, [moveDown]);
-
-  // useEffect(() => {
-  //   let num = 0;
-  //   const intervalTime = 250;
-  //   const interval = setInterval(() => {
-  //     setMoveDown(false);
-  //   }, intervalTime);
-  // });
 
   return (
     <div
