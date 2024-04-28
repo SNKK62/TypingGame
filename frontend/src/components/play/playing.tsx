@@ -46,7 +46,7 @@ const kanas: string[] = [
   '-',
 ];
 
-const limitTime = 100; //制限時間(秒×10)
+const limitTime = 300; //制限時間(秒×10)
 
 const calcScore = (combo: number) => {
   if (combo >= 90) return 100;
