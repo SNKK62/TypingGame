@@ -28,7 +28,7 @@ export const FinishModal: React.FC<Props> = ({
 }) => {
   return (
     <Modal
-      isOpen={(time < 0) as boolean}
+      isOpen={(time <= 0) as boolean}
       style={{
         content: {
           width: '430px', // 幅を設定

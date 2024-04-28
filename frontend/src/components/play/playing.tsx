@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
@@ -46,7 +46,7 @@ const kanas: string[] = [
   '-',
 ];
 
-const limitTime = 100; //制限時間(秒×10)
+const limitTime = 300; //制限時間(秒×10)
 
 const calcScore = (combo: number) => {
   if (combo >= 90) return 100;
@@ -68,7 +68,8 @@ export const Playing = () => {
   const [accurateCount, setAccurateCount] = useState<number>(0);
   const [missCount, setMissCount] = useState<number>(0);
   const [time, setTime] = useState<number>(limitTime);
-  const intervalRef = useRef(null);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const [screenWidth, setScreenWidth] = useState<number | undefined>(undefined);
   //   document.documentElement.clientWidth || document.body.clientWidth,
   // );
@@ -88,10 +89,24 @@ export const Playing = () => {
   });
 
   const handleStart = () => {
-    intervalRef.current = setInterval(() => {
-      setTime((prevTime) => prevTime - 1);
-    }, 100);
+    setIsProcessing(true);
   };
+
+  useEffect(() => {
+    let id: NodeJS.Timeout | null = null;
+    if (isProcessing && time > 0) {
+      id = setInterval(() => {
+        setTime((prevTime) => prevTime - 1);
+      }, 100);
+      setIntervalId(id);
+    } else if (time <= 0 && isProcessing) {
+      clearInterval(intervalId as NodeJS.Timeout);
+      //終了操作
+    }
+    return () => {
+      if (id) clearInterval(id);
+    };
+  }, [isProcessing, time]);
 
   useEffect(() => {
     setScreenWidth(window.innerWidth);
@@ -107,6 +122,7 @@ export const Playing = () => {
       }, 80); // 80ms後にfalseに変更
       return () => clearTimeout(timer); // タイマークリア
     }
+    return;
   }, [isCorrect, isWrong]);
 
   useEffect(() => {
@@ -129,7 +145,7 @@ export const Playing = () => {
 
   const handleKeyDown = useCallback(
     (event: unknown) => {
-      if (time < 0) return; // 時間外では操作不能にする
+      if (time <= 0) return; // 時間外では操作不能にする
       if (time >= limitTime) {
         if ((event as React.KeyboardEvent).key === ' ') {
           handleStart();
