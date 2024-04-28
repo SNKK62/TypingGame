@@ -30,10 +30,10 @@ const constructArray = (japanese: string): string[] => {
 const makeGoal = (array: string[]): string[] => {
   const answer = [];
   for (let i = 0; i < array.length; i++) {
-    if (array[i].length === 1) {
+    if ((array[i] as string).length === 1) {
       if (array[i] === 'ん') {
         if (array[i + 1]) {
-          if (KEY_AFTER_N.includes(array[i + 1])) {
+          if (KEY_AFTER_N.includes(array[i + 1] as string)) {
             answer.push('nn');
           } else {
             answer.push('n');
@@ -47,7 +47,7 @@ const makeGoal = (array: string[]): string[] => {
           answer.push(e.keys[0]);
         }
       }
-    } else if (array[i].length === 2) {
+    } else if ((array[i] as string).length === 2) {
       const e = L2KEY.find((_) => _.char === array[i]);
       if (e) {
         answer.push(e.keys[0]);
@@ -59,7 +59,7 @@ const makeGoal = (array: string[]): string[] => {
       }
     }
   }
-  return answer;
+  return answer as string[];
 };
 
 //音節の1要素を引数にとり、平仮名1文字ずつについて入力パターンを全て網羅するキー入力パターンlistを返す。
@@ -119,7 +119,7 @@ const compose21 = (japanese: string): string[] => {
   const candidate2 = [];
   for (let j = 0; j < entry.keys.length; j++) {
     for (let k = 0; k < candidate.length; k++) {
-      candidate2.push(candidate[k] + entry.keys[j]);
+      candidate2.push((candidate[k] as string) + entry.keys[j]);
     }
   }
   return candidate2;
