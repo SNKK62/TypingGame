@@ -1,3 +1,3 @@
 export default function Home() {
-  return <main>please·go·to·play</main>;
+  return <main>please go to /play</main>;
 }

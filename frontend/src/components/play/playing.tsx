@@ -145,7 +145,7 @@ export const Playing = () => {
 
   const handleKeyDown = useCallback(
     (event: unknown) => {
-      if (time < 0) return; // 時間外では操作不能にする
+      if (time <= 0) return; // 時間外では操作不能にする
       if (time >= limitTime) {
         if ((event as React.KeyboardEvent).key === ' ') {
           handleStart();
