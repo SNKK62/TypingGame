@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useReducer } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
@@ -214,7 +214,7 @@ export const Playing = () => {
       allPattern,
       values.japanesearray,
       time,
-      plusPoint,
+      combo,
     ],
   );
 
@@ -287,7 +287,6 @@ export const Playing = () => {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <h1>{nIsOk ? 'Hello' : 'See You'}</h1>
       <Cards
         card1word={words[values.wordIndex + 2]}
         card1kana={kanas[values.wordIndex + 2]}
