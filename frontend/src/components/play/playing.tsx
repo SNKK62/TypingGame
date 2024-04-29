@@ -92,6 +92,7 @@ export const Playing = () => {
   useEffect(() => {
     let id: NodeJS.Timeout | null = null;
     if (isProcessing && values.wordIndex <= words.length - 5 && time > 0) {
+
       id = setInterval(() => {
         setTime((prevTime) => prevTime - 1);
       }, 100);
