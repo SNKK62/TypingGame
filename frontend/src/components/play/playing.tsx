@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useReducer } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
