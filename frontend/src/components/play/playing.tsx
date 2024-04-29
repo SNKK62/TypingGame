@@ -89,17 +89,6 @@ export const Playing = () => {
     setIsProcessing(true);
   };
 
-  const plusPoint = (k: string) => {
-    setIsCorrect(k);
-    setScore((prevScore) => prevScore + calcScore(combo));
-    setCombo((prevCombo) => {
-      return prevCombo + 1;
-    });
-    setAccurateCount((prevCount) => {
-      return prevCount + 1;
-    });
-  };
-
   useEffect(() => {
     let id: NodeJS.Timeout | null = null;
     if (isProcessing && values.wordIndex <= words.length - 5 && time > 0) {
@@ -167,7 +156,18 @@ export const Playing = () => {
         entered,
         allPattern,
         pastInput[soundIndex - 1] as string,
-      );
+      ); //次のstate更新に必要な情報を取得
+      const plusPoint = (k: string) => {
+        setIsCorrect(k);
+        setScore((prevScore) => prevScore + calcScore(combo));
+        setCombo((prevCombo) => {
+          return prevCombo + 1;
+        });
+        setAccurateCount((prevCount) => {
+          return prevCount + 1;
+        });
+      }; //正解した際の処理
+
       if (judgeType === JUDGE_TYPE.endOfSyllable) {
         //音節の入力が完了した、かつWordの終わりではない場合
         if (newEntered === 'n' && values.japanesearray[soundIndex] === 'ん') {
@@ -214,9 +214,7 @@ export const Playing = () => {
       allPattern,
       values.japanesearray,
       time,
-      combo,
       plusPoint,
-      combo,
     ],
   );
 
