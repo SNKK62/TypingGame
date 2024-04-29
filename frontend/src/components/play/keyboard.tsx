@@ -7,6 +7,7 @@ interface Props {
   wrong: string;
   candidate: string[];
   shiftPressed: boolean;
+  nIsOk: boolean;
 }
 
 const keys1stLine: string[] = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '^'];
@@ -20,8 +21,12 @@ export const Keyboard: React.FC<Props> = ({
   correct,
   wrong,
   candidate,
+  nIsOk,
   //   shiftPressed,
 }) => {
+  if (nIsOk) {
+    candidate.push('n');
+  }
   return (
     <div>
       {keys1stLine.map((item, index) => (
