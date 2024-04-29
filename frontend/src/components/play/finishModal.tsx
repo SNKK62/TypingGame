@@ -14,6 +14,7 @@ interface Props {
   screenHeight: number;
   screenWidth: number;
   limitTime: number;
+  finished: boolean;
 }
 
 export const FinishModal: React.FC<Props> = ({
@@ -25,10 +26,11 @@ export const FinishModal: React.FC<Props> = ({
   screenHeight,
   screenWidth,
   limitTime,
+  finished,
 }) => {
   return (
     <Modal
-      isOpen={(time <= 0) as boolean}
+      isOpen={((time <= 0) as boolean) || finished}
       style={{
         content: {
           width: '430px', // 幅を設定
@@ -45,7 +47,11 @@ export const FinishModal: React.FC<Props> = ({
         },
       }}
     >
-      <h2>Time is over! Here&apos;s your result!</h2>
+      {time <= 0 ? (
+        <h2>Time is over! Here&apos;s your result!</h2>
+      ) : (
+        <h2>You finished! Here&apos;s your result!</h2>
+      )}
       <ScoreBoard
         score={score}
         remTime={0}
@@ -54,7 +60,7 @@ export const FinishModal: React.FC<Props> = ({
         missCount={missCount}
         screenHeight={screenHeight}
         screenWidth={screenWidth}
-        limitTime={limitTime}
+        limitTime={limitTime - time}
       ></ScoreBoard>
       <div style={{ padding: '10px 130px' }}>
         <Button

@@ -63,6 +63,7 @@ export const Playing = () => {
   const [allPattern, setAllPattern] = useState<string[]>([]); //現在の音節において許容される入力パターンの全て
   const [isCorrect, setIsCorrect] = useState<string>(''); //正解したフラグ(キーボードが緑に光る)
   const [isWrong, setIsWrong] = useState<string>(''); //不正解したフラグ(キーボードが赤に光る)
+  const [nIsOk, setNIsOk] = useState<boolean>(false); //次にnを打っても正解となる場合(nが青く光る)
   const [score, setScore] = useState<number>(0); //現在の得点
   const [combo, setCombo] = useState<number>(0); //連続して正解した数
   const [accurateCount, setAccurateCount] = useState<number>(0);
@@ -71,11 +72,7 @@ export const Playing = () => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
   const [screenWidth, setScreenWidth] = useState<number | undefined>(undefined);
-  //   document.documentElement.clientWidth || document.body.clientWidth,
-  // );
   const [screenHeight, setScreenHeight] = useState<number | undefined>(undefined);
-  //   document.documentElement.clientHeight || document.body.clientHeight,
-  // );
   const [values, setValues] = useState<{
     wordIndex: number; //現在のwordsのインデックス
     gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
@@ -94,19 +91,20 @@ export const Playing = () => {
 
   useEffect(() => {
     let id: NodeJS.Timeout | null = null;
-    if (isProcessing && time > 0) {
+    if (isProcessing && values.wordIndex <= words.length - 5 && time > 0) {
+
       id = setInterval(() => {
         setTime((prevTime) => prevTime - 1);
       }, 100);
       setIntervalId(id);
-    } else if (time <= 0 && isProcessing) {
+    } else if (isProcessing) {
       clearInterval(intervalId as NodeJS.Timeout);
       //終了操作
     }
     return () => {
       if (id) clearInterval(id);
     };
-  }, [isProcessing, time]);
+  }, [isProcessing, time, values.wordIndex]);
 
   useEffect(() => {
     setScreenWidth(window.innerWidth);
@@ -159,14 +157,9 @@ export const Playing = () => {
         entered,
         allPattern,
         pastInput[soundIndex - 1] as string,
-      );
-      if (judgeType === JUDGE_TYPE.endOfSyllable) {
-        //音節の入力が完了した、かつWordの終わりではない場合
-        setSoundIndex(newCount);
-        setAllPattern(newAllPattern);
-        setEntered('');
-        setPastInput(pastInput.concat([newEntered]));
-        setIsCorrect((event as React.KeyboardEvent).key);
+      ); //次のstate更新に必要な情報を取得
+      const plusPoint = (k: string) => {
+        setIsCorrect(k);
         setScore((prevScore) => prevScore + calcScore(combo));
         setCombo((prevCombo) => {
           return prevCombo + 1;
@@ -174,43 +167,37 @@ export const Playing = () => {
         setAccurateCount((prevCount) => {
           return prevCount + 1;
         });
+      }; //正解した際の処理
+
+      if (judgeType === JUDGE_TYPE.endOfSyllable) {
+        //音節の入力が完了した、かつWordの終わりではない場合
+        if (newEntered === 'n' && values.japanesearray[soundIndex] === 'ん') {
+          setNIsOk(true);
+        } else setNIsOk(false);
+        setSoundIndex(newCount);
+        setAllPattern(newAllPattern);
+        setEntered('');
+        setPastInput(pastInput.concat([newEntered]));
+        plusPoint((event as React.KeyboardEvent).key);
       } else if (judgeType === JUDGE_TYPE.endOfWord) {
         //音節の入力が完了した、かつWordが終了した場合
         const newInputs = [...inputs];
         newInputs[values.wordIndex] = pastInput.concat([newEntered]).join('');
         setInputs(newInputs);
         setMoveDown(false);
-        setIsCorrect((event as React.KeyboardEvent).key);
-        setScore((prevScore) => prevScore + calcScore(combo));
-        setCombo((prevCombo) => {
-          return prevCombo + 1;
-        });
-        setAccurateCount((prevCount) => {
-          return prevCount + 1;
-        });
+        plusPoint((event as React.KeyboardEvent).key);
+        setNIsOk(false);
       } else if (judgeType === JUDGE_TYPE.midOfSyllable) {
         //音節の途中の場合
         setEntered(newEntered);
         setAllPattern(newAllPattern);
-        setIsCorrect((event as React.KeyboardEvent).key);
-        setScore((prevScore) => prevScore + calcScore(combo));
-        setCombo((prevCombo) => {
-          return prevCombo + 1;
-        });
-        setAccurateCount((prevCount) => {
-          return prevCount + 1;
-        });
+        plusPoint((event as React.KeyboardEvent).key);
+        setNIsOk(false);
       } else if (judgeType === JUDGE_TYPE.correctN) {
         //前の音節が「ん」でnで入力を終わらせていて、次にnを入力した場合
         setPastInput(pastInput.slice(0, soundIndex - 1).concat(['nn']));
-        setIsCorrect((event as React.KeyboardEvent).key);
-        setScore((prevScore) => prevScore + calcScore(combo));
-        setCombo((prevCombo) => {
-          return prevCombo + 1;
-        });
-        setAccurateCount((prevCount) => {
-          return prevCount + 1;
-        });
+        plusPoint('n');
+        setNIsOk(false);
       } else {
         setIsWrong((event as React.KeyboardEvent).key);
         setCombo(0);
@@ -334,6 +321,7 @@ export const Playing = () => {
             correct={isCorrect}
             wrong={isWrong}
             candidate={allPattern.map((str) => str.charAt(entered.length))}
+            nIsOk={nIsOk}
             shiftPressed={false}
           ></Keyboard>
           <ScoreBoard
@@ -351,6 +339,7 @@ export const Playing = () => {
       <WaitingModal isOpen={time >= limitTime} funct={handleStart}></WaitingModal>
       <FinishModal
         time={time}
+        finished={values.wordIndex >= words.length - 4}
         score={score}
         combo={combo}
         accurateCount={accurateCount}
