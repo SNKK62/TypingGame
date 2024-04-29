@@ -27,6 +27,7 @@ export const Keyboard: React.FC<Props> = ({
   if (nIsOk) {
     candidate.push('n');
   }
+  const keyWidth = Math.min(screenWidth * 0.06, (screenHeight * 0.5 * 0.25 * 6) / 7);
   return (
     <div>
       {keys1stLine.map((item, index) => (
@@ -35,7 +36,7 @@ export const Keyboard: React.FC<Props> = ({
           top={screenHeight * 0.5}
           left={screenWidth * (0.07 + 0.07 * index)}
           height={screenHeight / 9}
-          width={screenWidth * 0.06}
+          width={keyWidth}
           isShift={false}
           alphabet={item}
           shiftAlphabet=''
@@ -48,10 +49,10 @@ export const Keyboard: React.FC<Props> = ({
       {keys2ndLine.map((item, index) => (
         <Key
           key={item}
-          top={screenHeight * 0.5 + screenWidth * 0.07}
+          top={screenHeight * 0.5 + ((keyWidth * 7) / 6) * 1}
           left={screenWidth * (0.09 + 0.07 * index)}
           height={screenHeight / 9}
-          width={screenWidth * 0.06}
+          width={keyWidth}
           isShift={false}
           alphabet={item}
           shiftAlphabet=''
@@ -64,10 +65,10 @@ export const Keyboard: React.FC<Props> = ({
       {keys3rdLine.map((item, index) => (
         <Key
           key={item}
-          top={screenHeight * 0.5 + screenWidth * 0.14}
+          top={screenHeight * 0.5 + ((keyWidth * 7) / 6) * 2}
           left={screenWidth * (0.11 + 0.07 * index)}
           height={screenHeight / 9}
-          width={screenWidth * 0.06}
+          width={keyWidth}
           isShift={false}
           alphabet={item}
           shiftAlphabet=''
@@ -80,10 +81,10 @@ export const Keyboard: React.FC<Props> = ({
       {keys4thLine.map((item, index) => (
         <Key
           key={item}
-          top={screenHeight * 0.5 + screenWidth * 0.21}
+          top={screenHeight * 0.5 + ((keyWidth * 7) / 6) * 3}
           left={screenWidth * (0.14 + 0.07 * index)}
           height={screenHeight / 9}
-          width={screenWidth * 0.06}
+          width={keyWidth}
           isShift={false}
           alphabet={item}
           shiftAlphabet=''
