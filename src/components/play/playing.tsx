@@ -1,16 +1,15 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
-import { Background } from './bavkground';
 import { Cards } from './cards';
 import { FinishModal } from './finishModal';
 import { Keyboard } from './keyboard';
 import { ScoreBoard } from './scoreBoard';
 import { WaitingModal } from './waitingModal';
-import Image from 'next/image';
 
 interface Props {
   words: string[];

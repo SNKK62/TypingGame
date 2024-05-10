@@ -45,5 +45,5 @@ export const Presenter = ({ data }: Props) => {
   // console.log('ワード、かな');
   // console.log(wordArray);
   // console.log(kanaArray);
-  return <Playing words={wordArray} kanas={kanaArray} background={'backgroundImage.png'} />;
+  return <Playing words={wordArray} kanas={kanaArray} />;
 };

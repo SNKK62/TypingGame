@@ -4,7 +4,6 @@ import React from 'react';
 
 import { GroupCard } from '@/components/choice/groupCard';
 import { Header } from '@/components/header';
-import { Button } from '@/components/utils/button';
 
 interface Props {
   data:

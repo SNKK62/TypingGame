@@ -18,7 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   color = 'secondary',
   startIcon,
-  href = null,
+  href = '#',
   width,
   height,
   onClick,
