@@ -40,6 +40,7 @@ export const NumberDisplay: React.FC<Props> = ({
           <p
             key={i}
             style={{
+              color: 'brack',
               backgroundColor: 'whitesmoke',
               height: height,
               width: width,
@@ -57,6 +58,7 @@ export const NumberDisplay: React.FC<Props> = ({
         {decimal && (
           <p
             style={{
+              color: 'brack',
               backgroundColor: 'whitesmoke',
               height: height,
               width: '8px',
@@ -74,6 +76,7 @@ export const NumberDisplay: React.FC<Props> = ({
         {decimal && (
           <p
             style={{
+              color: 'brack',
               backgroundColor: 'whitesmoke',
               height: height,
               width: width,
@@ -91,6 +94,7 @@ export const NumberDisplay: React.FC<Props> = ({
         {scale && (
           <p
             style={{
+              color: 'brack',
               backgroundColor: 'whitesmoke',
               height: height,
               width: scale.length === 1 ? width : 100,

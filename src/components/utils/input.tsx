@@ -1,5 +1,5 @@
 import RawTextField from '@mui/material/TextField';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface TextFieldProps {
   hidden?: boolean;
@@ -38,7 +38,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   multiline = false,
   maxRows = 10,
   readOnly = false,
-  shrink = true,
+  shrink = false,
   type = 'text',
   onChange,
   value,
@@ -53,7 +53,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   };
   const onBlur = () => {
     setIsFocused(false);
-    if (!shrink && isBlank) {
+    if (!shrink && isBlank && !value) {
       setIsShrunk(false);
     }
   };
@@ -61,7 +61,7 @@ export const TextField: React.FC<TextFieldProps> = ({
     setIsShrunk(true);
   };
   const onMouseLeave = () => {
-    if (!isFocused && isBlank) {
+    if (!isFocused && isBlank && !value) {
       setIsShrunk(false);
     }
   };
@@ -73,6 +73,9 @@ export const TextField: React.FC<TextFieldProps> = ({
     margin: '8px',
     width: width,
   };
+  useEffect(() => {
+    if (value) setIsShrunk(true);
+  }, [value]);
   return (
     <RawTextField
       hidden={hidden}

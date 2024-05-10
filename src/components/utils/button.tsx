@@ -9,6 +9,7 @@ interface ButtonProps {
   width?: string;
   height?: string;
   onClick: () => void;
+  type?: string;
   children: React.ReactNode;
 }
 
@@ -17,10 +18,11 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   color = 'secondary',
   startIcon,
-  href = '',
+  href = null,
   width,
   height,
   onClick,
+  type = '',
   children,
 }) => {
   const sxProperty: object = {
@@ -36,6 +38,7 @@ export const Button: React.FC<ButtonProps> = ({
       startIcon={startIcon}
       href={href}
       sx={sxProperty}
+      type={type}
     >
       {children}
     </RawButton>

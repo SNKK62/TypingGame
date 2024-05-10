@@ -69,13 +69,20 @@ export const FinishModal: React.FC<Props> = ({
           justifyContent: 'center',
         }}
       >
-        <Button
-          onClick={() => {
-            window.location.reload();
-          }}
-        >
-          TRY AGAIN!
-        </Button>
+        <div style={{ margin: '0 10px' }}>
+          <Button
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            TRY AGAIN!
+          </Button>
+        </div>
+        <div style={{ margin: '0 10px' }}>
+          <Button onClick={() => {}} href='/top'>
+            TOPに戻る
+          </Button>
+        </div>
       </div>
     </Modal>
   );

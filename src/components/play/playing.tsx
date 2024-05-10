@@ -4,56 +4,27 @@ import React, { useState, useEffect, useCallback } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
 
+import { Background } from './bavkground';
 import { Cards } from './cards';
 import { FinishModal } from './finishModal';
 import { Keyboard } from './keyboard';
 import { ScoreBoard } from './scoreBoard';
 import { WaitingModal } from './waitingModal';
+import Image from 'next/image';
 
-const words: string[] = [
-  //必ず後ろに4つの番兵をつける
-  '朝鮮民主主義人民共和国',
-  '中華人民共和国上海市',
-  '東京特許許可局',
-  '東京箱根間往復大学駅伝競走',
-  '信仰心理学',
-  '美容整形外科',
-  '環境保護活動家',
-  '経済学者協会',
-  '地球環境問題',
-  '科学技術振興機構',
-  '平等院鳳凰堂',
-  '',
-  '',
-  '',
-  '',
-];
-const kanas: string[] = [
-  'ちょうせんみんしゅしゅぎじんみんきょうわこく',
-  'ちゅうかじんみんきょうわこくしゃんはいし',
-  'とうきょうとっきょきょかきょく',
-  'とうきょうはこねかんおうふくだいがくえきでんきょうそう',
-  'しんこうしんりがく',
-  'びようせいけいげか',
-  'かんきょうほごかつどうか',
-  'けいざいがくしゃきょうかい',
-  'ちきゅうかんきょうもんだい',
-  'かがくぎじゅつしんこうきこう',
-  'びょうどういんほうおうどう',
-  '-',
-  '-',
-  '-',
-  '-',
-];
+interface Props {
+  words: string[];
+  kanas: string[];
+}
 
 const limitTime = 300; //制限時間(秒×10)
 
 const calcScore = (combo: number) => {
-  if (combo >= 90) return 100;
+  if (combo >= 191) return 200;
   return (Math.floor(combo / 10) + 1) * 10;
 };
 
-export const Playing = () => {
+export const Playing = ({ words, kanas }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0); //現在の音節番号
   const [entered, setEntered] = useState<string>(''); //現在の音節において今までに入力したキー
@@ -144,6 +115,7 @@ export const Playing = () => {
           return;
         } else return;
       }
+      if (values.wordIndex >= words.length - 4) return;
       const [judgeType, newEntered, newAllPattern, newCount] = judge(
         (event as React.KeyboardEvent).key,
         values.japanesearray,
@@ -210,6 +182,7 @@ export const Playing = () => {
       values.japanesearray,
       time,
       combo,
+      words.length,
     ],
   );
 
@@ -273,15 +246,8 @@ export const Playing = () => {
   }, [moveDown]);
 
   return (
-    <div
-      style={{
-        backgroundImage: 'url("backgroundImage.png")',
-        height: '100vh',
-        width: '100vw',
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
+    <div>
+      <Image src='/backgroundImage.png' alt='picture' fill={true} style={{ objectFit: 'cover' }} />
       <Cards
         card1word={words[values.wordIndex + 2]}
         card1kana={kanas[values.wordIndex + 2]}

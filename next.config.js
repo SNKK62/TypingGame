@@ -4,10 +4,13 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/play',
+        destination: '/top',
         permanent: true,
       },
     ];
+  },
+  experimental: {
+    serverActions: true,
   },
 };
 

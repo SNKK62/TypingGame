@@ -19,6 +19,8 @@ const constructArray = (japanese: string): string[] => {
         if (g) {
           array.push(g.char);
           i++;
+        } else {
+          return []; //対応しない文字が含まれていた場合はからの配列をreturnする。
         }
       }
     }
@@ -28,6 +30,9 @@ const constructArray = (japanese: string): string[] => {
 
 //音節分けされた平仮名listを引数にとり、個々の音節に対してお手本のキーを含むlistを返す
 const makeGoal = (array: string[]): string[] => {
+  if (array.length === 0) {
+    return [];
+  }
   const answer = [];
   for (let i = 0; i < array.length; i++) {
     if ((array[i] as string).length === 1) {
@@ -128,6 +133,7 @@ const compose21 = (japanese: string): string[] => {
 //音節の1要素を引数にとり、音節の入力パターンを全て網羅したキー入力パターンを返す。
 const makeAllPattern = (st: string, next: string | undefined): string[] => {
   let pattern: string[] = [];
+  if (!st) return pattern;
   if (st.length === 1) {
     if (st === 'ん') {
       if (next) {
