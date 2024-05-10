@@ -52,6 +52,18 @@ const Page = () => (
           プレイ！
         </Button>
       </div>
+      <div style={{ height: '50px' }}></div>
+      <div style={{ textAlign: 'center', letterSpacing: '3px', textShadow: '2px 2px 3px black' }}>
+        <p>作問はこちらから</p>
+        <Button
+          onClick={() => {
+            return;
+          }}
+          href='/make'
+        >
+          問題作成へ
+        </Button>
+      </div>
       <div style={{ height: '300px' }}></div>
       <div>制作 : Yusuke</div>
     </div>

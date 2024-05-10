@@ -134,6 +134,7 @@ const Page = () => {
             width='160px'
             type='submit'
             disabled={!valid}
+            href='/choice'
           >
             送信!
           </Button>
