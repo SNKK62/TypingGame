@@ -9,8 +9,8 @@ interface ModalProps {
   isOpen: boolean;
   title: string;
   description: string;
-  onClickEdit: (title: string, description: string) => void;
-  onClickCancel: () => void;
+  handleEdit: (title: string, description: string) => void;
+  handleCancel: () => void;
 }
 
 const maxTitleLength = 20;
@@ -20,8 +20,8 @@ export const TitleEditModal: React.FC<ModalProps> = ({
   isOpen,
   title,
   description,
-  onClickCancel,
-  onClickEdit,
+  handleCancel,
+  handleEdit,
 }) => {
   const [inputT, setInputT] = useState<string>(title);
   const [inputD, setInputD] = useState<string>(description);
@@ -107,11 +107,11 @@ export const TitleEditModal: React.FC<ModalProps> = ({
 
       <div style={{ justifyContent: 'center', display: 'flex' }}>
         <div style={{ margin: '0 40px' }}>
-          <Button onClick={onClickCancel}>キャンセル</Button>
+          <Button onClick={handleCancel}>キャンセル</Button>
         </div>
 
         <div style={{ margin: '0 40px' }}>
-          <Button onClick={() => onClickEdit(inputT, inputD)} disabled={!isVarid}>
+          <Button onClick={() => handleEdit(inputT, inputD)} disabled={!isVarid}>
             決定
           </Button>
         </div>

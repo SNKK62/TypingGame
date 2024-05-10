@@ -17,13 +17,13 @@ const Page = () => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [maxNumber, setMaxNumber] = useState<number>(0);
-  const [isEditing, setIsEditing] = useState<number>(-1);
+  const [EditingNumber, setEditingNumber] = useState<number>(-1);
   const insertData = (word: string, kana: string) => {
     setData((prevData) => {
       return prevData.concat([{ id: maxNumber, word: word, kana: kana, isActive: true }]);
     });
     setMaxNumber((prevMaxNumber) => prevMaxNumber + 1);
-    setIsEditing(-1);
+    setEditingNumber(-1);
   };
   const deleteData = (id: number) => {
     setData((prevData) => {
@@ -34,7 +34,7 @@ const Page = () => {
         return item;
       });
     });
-    setIsEditing(-1);
+    setEditingNumber(-1);
   };
   const editData = (id: number, word: string, kana: string) => {
     setData((prevData) => {
@@ -45,7 +45,7 @@ const Page = () => {
         return item;
       });
     });
-    setIsEditing(-1);
+    setEditingNumber(-1);
   };
   const isNotEmpty = () => {
     let empty = true;
@@ -85,7 +85,7 @@ const Page = () => {
         <Header />
         <div style={{ padding: '4px' }}>
           <h2 style={{ fontWeight: 300, float: 'left' }}>{title}</h2>
-          <Button onClick={() => setIsEditing(-2)}>タイトル・説明の編集</Button>
+          <Button onClick={() => setEditingNumber(-2)}>タイトル・説明の編集</Button>
         </div>
 
         <Divider sx={{ backgroundColor: '#ff32ff' }}></Divider>
@@ -100,7 +100,7 @@ const Page = () => {
                 word={item.word}
                 kana={item.kana}
                 onClick={() => {
-                  setIsEditing(item.id);
+                  setEditingNumber(item.id);
                 }}
                 key={item.id}
               ></WordEditCard>
@@ -108,7 +108,7 @@ const Page = () => {
         )}
 
         <div style={{ padding: '4px', justifyContent: 'center', display: 'flex' }}>
-          <Button onClick={() => setIsEditing(maxNumber)}>単語を追加</Button>
+          <Button onClick={() => setEditingNumber(maxNumber)}>単語を追加</Button>
         </div>
         <Divider sx={{ backgroundColor: '#ff32ff' }}></Divider>
         <div style={{ height: '4px' }}></div>
@@ -140,25 +140,25 @@ const Page = () => {
         </div>
 
         <EditModal
-          isOpen={isEditing > -1}
-          isNew={isEditing >= maxNumber}
-          word={data[isEditing] ? (data[isEditing]?.word as string) : ''}
-          kana={data[isEditing] ? (data[isEditing]?.kana as string) : ''}
-          id={isEditing}
-          onClickEdit={editData}
-          onClickCreate={insertData}
-          onClickCancel={() => setIsEditing(-1)}
-          onClickDelete={deleteData}
+          isOpen={EditingNumber > -1}
+          isNew={EditingNumber >= maxNumber}
+          word={data[EditingNumber] ? (data[EditingNumber]?.word as string) : ''}
+          kana={data[EditingNumber] ? (data[EditingNumber]?.kana as string) : ''}
+          id={EditingNumber}
+          handleEdit={editData}
+          handleCreate={insertData}
+          handleCancel={() => setEditingNumber(-1)}
+          handleDelete={deleteData}
         ></EditModal>
         <TitleEditModal
-          isOpen={isEditing === -2}
+          isOpen={EditingNumber === -2}
           title={title}
           description={description}
-          onClickCancel={() => setIsEditing(-1)}
-          onClickEdit={(title, description) => {
+          handleCancel={() => setEditingNumber(-1)}
+          handleEdit={(title, description) => {
             setTitle(title);
             setDescription(description);
-            setIsEditing(-1);
+            setEditingNumber(-1);
           }}
         />
       </div>

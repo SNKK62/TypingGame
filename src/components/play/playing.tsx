@@ -17,10 +17,9 @@ interface Props {
 }
 
 const limitTime = 300; //制限時間(秒×10)
-
+const maxPointAtOneType = 200;
 const calcScore = (combo: number) => {
-  if (combo >= 191) return 200;
-  return (Math.floor(combo / 10) + 1) * 10;
+  return Math.min(maxPointAtOneType, (Math.floor(combo / 10) + 1) * 10);
 };
 
 export const Playing = ({ words, kanas }: Props) => {
@@ -114,7 +113,8 @@ export const Playing = ({ words, kanas }: Props) => {
           return;
         } else return;
       }
-      if (values.wordIndex >= words.length - 4) return;
+      const offset = 4; //ワードの最後に付け足す番兵の分の数字
+      if (values.wordIndex >= words.length - offset) return;
       const [judgeType, newEntered, newAllPattern, newCount] = judge(
         (event as React.KeyboardEvent).key,
         values.japanesearray,

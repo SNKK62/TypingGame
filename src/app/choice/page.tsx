@@ -2,7 +2,7 @@ import { getGroups } from './actions';
 import { Container } from './container';
 
 const Page = async () => {
-  const data = await getGroups(0);
+  const data = await getGroups();
   return <Container data={data} />;
 };
 

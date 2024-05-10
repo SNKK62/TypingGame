@@ -18,16 +18,17 @@ interface Props {
     | null;
 }
 
+function truncateString(str: string): string {
+  const periodIndex = str.indexOf('.');
+  const colonIndex = str.indexOf('T');
+  const minIndex = Math.min(
+    periodIndex === -1 ? Infinity : periodIndex,
+    colonIndex === -1 ? Infinity : colonIndex,
+  );
+  return minIndex === -1 ? str : str.slice(0, minIndex);
+}
+
 export const Container: React.FC<Props> = ({ data }) => {
-  function truncateString(str: string): string {
-    const periodIndex = str.indexOf('.');
-    const colonIndex = str.indexOf('T');
-    const minIndex = Math.min(
-      periodIndex === -1 ? Infinity : periodIndex,
-      colonIndex === -1 ? Infinity : colonIndex,
-    );
-    return minIndex === -1 ? str : str.slice(0, minIndex);
-  }
   return (
     <div
       style={{

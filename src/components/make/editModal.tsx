@@ -14,10 +14,10 @@ interface ModalProps {
   id: number;
   word: string;
   kana: string;
-  onClickCreate: (word: string, key: string) => void;
-  onClickEdit: (id: number, word: string, kana: string) => void;
-  onClickDelete: (id: number) => void;
-  onClickCancel: () => void;
+  handleCreate: (word: string, key: string) => void;
+  handleEdit: (id: number, word: string, kana: string) => void;
+  handleDelete: (id: number) => void;
+  handleCancel: () => void;
 }
 
 const maxWordLength = 20;
@@ -29,10 +29,10 @@ export const EditModal: React.FC<ModalProps> = ({
   id,
   word,
   kana,
-  onClickCreate,
-  onClickCancel,
-  onClickDelete,
-  onClickEdit,
+  handleCreate,
+  handleCancel,
+  handleDelete,
+  handleEdit,
 }) => {
   const [inputW, setInputW] = useState<string>('');
   const [inputK, setInputK] = useState<string>('');
@@ -165,23 +165,23 @@ export const EditModal: React.FC<ModalProps> = ({
       <div style={{ justifyContent: 'center', display: 'flex' }}>
         {!isNew && (
           <div style={{ margin: '0 40px' }}>
-            <Button onClick={() => onClickDelete(id)} color='error'>
+            <Button onClick={() => handleDelete(id)} color='error'>
               削除
             </Button>
           </div>
         )}
         <div style={{ margin: '0 40px' }}>
-          <Button onClick={onClickCancel}>キャンセル</Button>
+          <Button onClick={handleCancel}>キャンセル</Button>
         </div>
         {isNew ? (
           <div style={{ margin: '0 40px' }}>
-            <Button onClick={() => onClickCreate(inputW, inputK)} disabled={!isVarid}>
+            <Button onClick={() => handleCreate(inputW, inputK)} disabled={!isVarid}>
               作成
             </Button>
           </div>
         ) : (
           <div style={{ margin: '0 40px' }}>
-            <Button onClick={() => onClickEdit(id, inputW, inputK)} disabled={!isVarid}>
+            <Button onClick={() => handleEdit(id, inputW, inputK)} disabled={!isVarid}>
               更新
             </Button>
           </div>

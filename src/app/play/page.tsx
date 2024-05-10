@@ -37,19 +37,7 @@ const kanas: string[] = [
 ];
 
 const Presenter = () => {
-  return (
-    <div
-      style={{
-        backgroundImage: 'url("backgroundImage.png")',
-        height: '100vh',
-        width: '100vw',
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-      }}
-    >
-      <Playing words={words} kanas={kanas} />
-    </div>
-  );
+  return <Playing words={words} kanas={kanas} />;
 };
 
 export default Presenter;
