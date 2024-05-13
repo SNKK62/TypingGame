@@ -1,5 +1,6 @@
 'use client';
 import { Divider } from '@mui/material';
+import Image from 'next/image';
 import React from 'react';
 
 import { GroupCard } from '@/components/choice/groupCard';
@@ -30,17 +31,15 @@ function truncateString(str: string): string {
 
 export const Container: React.FC<Props> = ({ data }) => {
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        width: '100vw',
-        backgroundImage:
-          'linear-gradient(to bottom,rgba(32, 32, 0, 0.85),rgba(0, 0, 32, 0.85)), url("backgroundImage.png")',
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div>
+      <Image
+        className='picture'
+        src='/backgroundImage.png'
+        alt='picture'
+        layout='fill'
+        objectFit='cover'
+        style={{ zIndex: -1 }}
+      />
       <div
         style={{
           color: 'white',
@@ -63,7 +62,7 @@ export const Container: React.FC<Props> = ({ data }) => {
             play={item.play}
           ></GroupCard>
         ))}
-        <div style={{ height: `${data ? 18 * data.length : 18}vh` }}></div>
+        {/* <div style={{ height: `${data ? 18 * data.length : 18}vh` }}></div> */}
       </div>
     </div>
   );
