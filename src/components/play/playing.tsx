@@ -43,15 +43,14 @@ export const Playing = ({ words, kanas }: Props) => {
   const [screenHeight, setScreenHeight] = useState<number | undefined>(undefined);
   const [values, setValues] = useState<{
     wordIndex: number; //現在のwordsのインデックス
-    gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
     keyarray: string[]; //現在のwordにおいて音節に分けたお手本キーの配列を入れる
     japanesearray: string[]; //現在のwordにおいて音節に分けた平仮名の配列を入れる
   }>({
     wordIndex: 0,
-    gradation: 1,
     japanesearray: [''],
     keyarray: [''],
   });
+  const [gradation, setGradation] = useState<number>(1); //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
 
   const handleStart = () => {
     setIsProcessing(true);
@@ -211,33 +210,31 @@ export const Playing = ({ words, kanas }: Props) => {
       setSoundIndex(0);
       setPastInput([]);
       setEntered('');
+      const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
+        kanas[values.wordIndex + 1] as string,
+      );
       intervalId = setInterval(() => {
-        setValues((prevValues) => {
-          const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
-            kanas[prevValues.wordIndex + 1] as string,
-          );
-          newGrad = newGrad + delta;
-          if (newGrad >= 1) {
-            clearInterval(intervalId);
-            setMoveDown(true);
-            setInputs((prevInputs) => {
-              return prevInputs.concat(
-                loadGoal(kanas[prevValues.wordIndex + 3] as string).join(''),
-              );
-            });
-            return { ...prevValues, gradation: 1 };
-          }
-          if (newGrad <= 0) {
-            setAllPattern(tempAllPattern);
+        newGrad = newGrad + delta;
+        if (newGrad >= 1) {
+          clearInterval(intervalId);
+          setMoveDown(true);
+          setInputs((prevInputs) => {
+            return prevInputs.concat(loadGoal(kanas[values.wordIndex + 3] as string).join(''));
+          });
+          setGradation(1);
+        } else if (newGrad <= 0) {
+          setAllPattern(tempAllPattern);
+          setValues((prevValues) => {
             return {
               wordIndex: prevValues.wordIndex + 1,
-              gradation: newGrad,
               japanesearray: tempJapaneseArray,
               keyarray: tempKeyArray,
             };
-          }
-          return { ...prevValues, gradation: newGrad };
-        });
+          });
+          setGradation(newGrad);
+        } else {
+          setGradation(newGrad);
+        }
       }, intervalTime);
     }
     return () => clearInterval(intervalId);
@@ -266,7 +263,7 @@ export const Playing = ({ words, kanas }: Props) => {
         card4key={inputs[values.wordIndex - 1] ? inputs[values.wordIndex - 1] : '-'}
         screenHeight={screenHeight as number}
         screenWidth={screenWidth as number}
-        gradation={values.gradation}
+        gradation={gradation}
         isCorrect={isCorrect}
         isWrong={isWrong}
         isTransparent={time >= limitTime}
@@ -283,7 +280,7 @@ export const Playing = ({ words, kanas }: Props) => {
             shiftPressed={false}
           ></Keyboard>
           <ScoreBoard
-            score={score}
+            score={values.wordIndex}
             remTime={time / 10}
             combo={combo}
             accurateCount={accurateCount}
