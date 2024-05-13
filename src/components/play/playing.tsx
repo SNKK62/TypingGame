@@ -219,7 +219,7 @@ export const Playing = ({ words, kanas }: Props) => {
           clearInterval(intervalId);
           setMoveDown(true);
           setInputs((prevInputs) => {
-            return prevInputs.concat(loadGoal(kanas[values.wordIndex + 3] as string).join(''));
+            return prevInputs.concat(loadGoal(kanas[values.wordIndex + 4] as string).join(''));
           });
           setGradation(1);
         } else if (newGrad <= 0) {
