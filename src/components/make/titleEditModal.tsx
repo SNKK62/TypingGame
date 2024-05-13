@@ -53,7 +53,7 @@ export const TitleEditModal: React.FC<ModalProps> = ({
         },
       }}
     >
-      <p style={{ textAlign: 'center', fontSize: '30px' }}>グループ情報を編集中</p>
+      <p style={{ textAlign: 'center', fontSize: '30px' }}>問題の情報を編集中</p>
       <Divider style={{ backgroundColor: 'purple' }} />
       <p>
         ★タイトルを入力してください。({maxTitleLength}文字以内) 現在:{inputT.length}文字

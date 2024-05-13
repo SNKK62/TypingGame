@@ -181,7 +181,6 @@ export const Playing = ({ words, kanas }: Props) => {
       values.japanesearray,
       time,
       combo,
-      words.length,
     ],
   );
 

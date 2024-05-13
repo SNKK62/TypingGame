@@ -63,6 +63,7 @@ export const Container: React.FC<Props> = ({ data }) => {
             play={item.play}
           ></GroupCard>
         ))}
+        <div style={{ height: `${data ? 18 * data.length : 18}vh` }}></div>
       </div>
     </div>
   );

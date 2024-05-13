@@ -55,13 +55,15 @@ const Page = () => (
       <div style={{ height: '50px' }}></div>
       <div style={{ textAlign: 'center', letterSpacing: '3px', textShadow: '2px 2px 3px black' }}>
         <p>作問はこちらから</p>
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
         <Button
           onClick={() => {
             return;
           }}
           href='/make'
         >
-          問題作成へ
+          作問画面へ
         </Button>
       </div>
       <div style={{ height: '300px' }}></div>
