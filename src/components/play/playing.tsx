@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { loading, loadGoal, judge, JUDGE_TYPE } from '@/utils/judgement';
@@ -10,50 +11,18 @@ import { Keyboard } from './keyboard';
 import { ScoreBoard } from './scoreBoard';
 import { WaitingModal } from './waitingModal';
 
-const words: string[] = [
-  //必ず後ろに4つの番兵をつける
-  '朝鮮民主主義人民共和国',
-  '中華人民共和国上海市',
-  '東京特許許可局',
-  '東京箱根間往復大学駅伝競走',
-  '信仰心理学',
-  '美容整形外科',
-  '環境保護活動家',
-  '経済学者協会',
-  '地球環境問題',
-  '科学技術振興機構',
-  '平等院鳳凰堂',
-  '',
-  '',
-  '',
-  '',
-];
-const kanas: string[] = [
-  'ちょうせんみんしゅしゅぎじんみんきょうわこく',
-  'ちゅうかじんみんきょうわこくしゃんはいし',
-  'とうきょうとっきょきょかきょく',
-  'とうきょうはこねかんおうふくだいがくえきでんきょうそう',
-  'しんこうしんりがく',
-  'びようせいけいげか',
-  'かんきょうほごかつどうか',
-  'けいざいがくしゃきょうかい',
-  'ちきゅうかんきょうもんだい',
-  'かがくぎじゅつしんこうきこう',
-  'びょうどういんほうおうどう',
-  '-',
-  '-',
-  '-',
-  '-',
-];
+interface Props {
+  words: string[];
+  kanas: string[];
+}
 
 const limitTime = 300; //制限時間(秒×10)
-
+const maxPointAtOneType = 200;
 const calcScore = (combo: number) => {
-  if (combo >= 90) return 100;
-  return (Math.floor(combo / 10) + 1) * 10;
+  return Math.min(maxPointAtOneType, (Math.floor(combo / 10) + 1) * 10);
 };
 
-export const Playing = () => {
+export const Playing = ({ words, kanas }: Props) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0); //現在の音節番号
   const [entered, setEntered] = useState<string>(''); //現在の音節において今までに入力したキー
@@ -74,15 +43,14 @@ export const Playing = () => {
   const [screenHeight, setScreenHeight] = useState<number | undefined>(undefined);
   const [values, setValues] = useState<{
     wordIndex: number; //現在のwordsのインデックス
-    gradation: number; //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
     keyarray: string[]; //現在のwordにおいて音節に分けたお手本キーの配列を入れる
     japanesearray: string[]; //現在のwordにおいて音節に分けた平仮名の配列を入れる
   }>({
     wordIndex: 0,
-    gradation: 1,
     japanesearray: [''],
     keyarray: [''],
   });
+  const [gradation, setGradation] = useState<number>(1); //0→1の値を取り、wordCardの位置や不透明度はこの変数に依存する
 
   const handleStart = () => {
     setIsProcessing(true);
@@ -144,6 +112,8 @@ export const Playing = () => {
           return;
         } else return;
       }
+      const offset = 4; //ワードの最後に付け足す番兵の分の数字
+      if (values.wordIndex >= words.length - offset) return;
       const [judgeType, newEntered, newAllPattern, newCount] = judge(
         (event as React.KeyboardEvent).key,
         values.japanesearray,
@@ -240,48 +210,39 @@ export const Playing = () => {
       setSoundIndex(0);
       setPastInput([]);
       setEntered('');
+      const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
+        kanas[values.wordIndex + 1] as string,
+      );
       intervalId = setInterval(() => {
-        setValues((prevValues) => {
-          const [tempJapaneseArray, tempKeyArray, tempAllPattern] = loading(
-            kanas[prevValues.wordIndex + 1] as string,
-          );
-          newGrad = newGrad + delta;
-          if (newGrad >= 1) {
-            clearInterval(intervalId);
-            setMoveDown(true);
-            setInputs((prevInputs) => {
-              return prevInputs.concat(
-                loadGoal(kanas[prevValues.wordIndex + 3] as string).join(''),
-              );
-            });
-            return { ...prevValues, gradation: 1 };
-          }
-          if (newGrad <= 0) {
-            setAllPattern(tempAllPattern);
+        newGrad = newGrad + delta;
+        if (newGrad >= 1) {
+          clearInterval(intervalId);
+          setMoveDown(true);
+          setInputs((prevInputs) => {
+            return prevInputs.concat(loadGoal(kanas[values.wordIndex + 3] as string).join(''));
+          });
+          setGradation(1);
+        } else if (newGrad <= 0) {
+          setAllPattern(tempAllPattern);
+          setValues((prevValues) => {
             return {
               wordIndex: prevValues.wordIndex + 1,
-              gradation: newGrad,
               japanesearray: tempJapaneseArray,
               keyarray: tempKeyArray,
             };
-          }
-          return { ...prevValues, gradation: newGrad };
-        });
+          });
+          setGradation(newGrad);
+        } else {
+          setGradation(newGrad);
+        }
       }, intervalTime);
     }
     return () => clearInterval(intervalId);
   }, [moveDown]);
 
   return (
-    <div
-      style={{
-        backgroundImage: 'url("backgroundImage.png")',
-        height: '100vh',
-        width: '100vw',
-        backgroundSize: 'cover',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
+    <div>
+      <Image src='/backgroundImage.png' alt='picture' fill={true} style={{ objectFit: 'cover' }} />
       <Cards
         card1word={words[values.wordIndex + 2]}
         card1kana={kanas[values.wordIndex + 2]}
@@ -302,7 +263,7 @@ export const Playing = () => {
         card4key={inputs[values.wordIndex - 1] ? inputs[values.wordIndex - 1] : '-'}
         screenHeight={screenHeight as number}
         screenWidth={screenWidth as number}
-        gradation={values.gradation}
+        gradation={gradation}
         isCorrect={isCorrect}
         isWrong={isWrong}
         isTransparent={time >= limitTime}
@@ -319,7 +280,7 @@ export const Playing = () => {
             shiftPressed={false}
           ></Keyboard>
           <ScoreBoard
-            score={score}
+            score={values.wordIndex}
             remTime={time / 10}
             combo={combo}
             accurateCount={accurateCount}

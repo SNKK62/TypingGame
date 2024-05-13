@@ -19,6 +19,8 @@ const constructArray = (japanese: string): string[] => {
         if (g) {
           array.push(g.char);
           i++;
+        } else {
+          return []; //対応しない文字が含まれていた場合はからの配列をreturnする。
         }
       }
     }
@@ -28,6 +30,9 @@ const constructArray = (japanese: string): string[] => {
 
 //音節分けされた平仮名listを引数にとり、個々の音節に対してお手本のキーを含むlistを返す
 const makeGoal = (array: string[]): string[] => {
+  if (array.length === 0) {
+    return [];
+  }
   const answer = [];
   for (let i = 0; i < array.length; i++) {
     if ((array[i] as string).length === 1) {
@@ -126,10 +131,11 @@ const compose21 = (japanese: string): string[] => {
 };
 
 //音節の1要素を引数にとり、音節の入力パターンを全て網羅したキー入力パターンを返す。
-const makeAllPattern = (st: string, next: string | undefined): string[] => {
+const makeAllPattern = (syllable: string, next: string | undefined): string[] => {
   let pattern: string[] = [];
-  if (st.length === 1) {
-    if (st === 'ん') {
+  if (!syllable) return pattern;
+  if (syllable.length === 1) {
+    if (syllable === 'ん') {
       if (next) {
         if (KEY_AFTER_N.includes(next)) {
           pattern = pattern.concat(['nn', 'xn']);
@@ -140,25 +146,25 @@ const makeAllPattern = (st: string, next: string | undefined): string[] => {
         pattern = pattern.concat(['nn', 'xn']);
       }
     } else {
-      const e = L1KEY.find((_) => _.char === st);
+      const e = L1KEY.find((_) => _.char === syllable);
       if (e) {
         pattern = pattern.concat(e.keys);
       }
     }
-  } else if (st.length === 2) {
-    const e = L2KEY.find((_) => _.char === st);
+  } else if (syllable.length === 2) {
+    const e = L2KEY.find((_) => _.char === syllable);
     if (e) {
       pattern = pattern.concat(e.keys);
     }
-    pattern = pattern.concat(compose(st));
+    pattern = pattern.concat(compose(syllable));
   } else {
-    const e = L3KEY.find((_) => _.char === st);
+    const e = L3KEY.find((_) => _.char === syllable);
     if (e) {
       pattern = pattern.concat(e.keys);
     }
-    pattern = pattern.concat(compose21(st));
-    pattern = pattern.concat(compose12(st));
-    pattern = pattern.concat(compose(st));
+    pattern = pattern.concat(compose21(syllable));
+    pattern = pattern.concat(compose12(syllable));
+    pattern = pattern.concat(compose(syllable));
   }
   return pattern;
 };
