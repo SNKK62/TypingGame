@@ -18,7 +18,7 @@ export const GroupCard: React.FC<Props> = ({ title, description, time, like, pla
       key={key}
       style={{
         backgroundColor: 'rgba(64,128,64,0.7)',
-        width: '30rem',
+        width: '38rem',
         height: '16vh',
         padding: '4px 8px',
         margin: '8px',
