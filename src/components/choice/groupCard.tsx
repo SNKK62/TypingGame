@@ -18,7 +18,7 @@ export const GroupCard: React.FC<Props> = ({ title, description, time, like, pla
       key={key}
       style={{
         backgroundColor: 'rgba(64,128,64,0.7)',
-        width: '35rem',
+        width: '38rem',
         height: '16vh',
         padding: '4px 8px',
         margin: '8px',
@@ -26,6 +26,7 @@ export const GroupCard: React.FC<Props> = ({ title, description, time, like, pla
         textShadow: '1px 1px 2px black',
         borderRadius: '1rem',
         boxShadow: '3px 3px black',
+        overflowY: 'hidden',
       }}
     >
       <div>
